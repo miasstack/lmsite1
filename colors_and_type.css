@@ -1,0 +1,297 @@
+/* =========================================================================
+   LATINO MAGIC — Design Tokens
+   Colors, typography, spacing, motion, elevation.
+   ========================================================================= */
+
+/* ---- Google Fonts (substitutions — see README "Font substitutions") ---- */
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600;1,700&family=Anton&family=Italiana&family=Manrope:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
+
+:root {
+  /* =====================================================================
+     COLORS — Core Brand
+     The LM monogram is rendered in a magenta→hot-pink gradient.
+     These are the brand's two anchor identity hues.
+     ===================================================================== */
+  --magenta-900: #5A0C6E;      /* deep wordmark purple */
+  --magenta-800: #7A1199;      /* "Latino Magic" wordmark */
+  --magenta-700: #9C1AAB;      /* gradient start */
+  --magenta-600: #C81FB4;
+  --magenta-500: #E91E97;      /* primary magenta */
+  --magenta-400: #EC4DB5;      /* tagline pink */
+  --magenta-300: #F472B6;      /* gradient end */
+  --magenta-200: #F9A8D4;
+  --magenta-100: #FCE7F3;
+  --magenta-50:  #FFF1FA;
+
+  /* The signature brand gradient. Use on logos, primary CTAs, accent fills. */
+  --grad-lm: linear-gradient(135deg, #9C1AAB 0%, #E91E97 55%, #F472B6 100%);
+  --grad-lm-flat: #C81FB4;
+  --grad-lm-soft: linear-gradient(135deg, #F472B6 0%, #FFC7E3 100%);
+
+  /* =====================================================================
+     COLORS — Neutrals (street → luxury)
+     ===================================================================== */
+  --ink-1000: #050505;         /* true black, t-shirt black, bomber lining */
+  --ink-900:  #111111;
+  --ink-800:  #1A1A1A;         /* primary text on cream */
+  --ink-700:  #2B2B2B;
+  --ink-600:  #4A4A4A;
+  --ink-500:  #6B6B6B;
+  --ink-400:  #8E8E8E;
+  --ink-300:  #B8B8B8;
+  --ink-200:  #DCDCDC;
+  --ink-100:  #ECECEC;
+  --ink-50:   #F5F5F5;
+  --cream:    #F7F1E5;         /* bone / lookbook background */
+  --paper:    #FBF8F2;
+  --white:    #FFFFFF;
+
+  /* =====================================================================
+     COLORS — Colorway System (product/collection palettes)
+     Each colorway is a 3-stop set: base, accent, trim.
+     Drop these directly onto monogram patterns, ribbed cuffs, etc.
+     ===================================================================== */
+
+  /* Latina — baby blue × pink (feminine, perreo soft) */
+  --cw-latina-base:   #87C2DD;
+  --cw-latina-accent: #F4C3D2;
+  --cw-latina-trim:   #FFFFFF;
+
+  /* Bandera — flag colors (machismo, varsity) */
+  --cw-bandera-base:   #1A3B8E;
+  --cw-bandera-accent: #DC2626;
+  --cw-bandera-trim:   #F5D000;
+
+  /* Selva — tropical green × gold */
+  --cw-selva-base:   #1FA85E;
+  --cw-selva-accent: #FFD200;
+  --cw-selva-trim:   #0B3D2E;
+
+  /* Bandidas — Día de Muertos / Latina Magic capsule */
+  --cw-bandidas-base:   #181818;
+  --cw-bandidas-accent: #BC1F2D;
+  --cw-bandidas-trim:   #ECDFC6;
+
+  /* Calle (street) — ochre wordmark colorway */
+  --cw-calle-base:   #D9A741;
+  --cw-calle-accent: #2B2B2B;
+  --cw-calle-trim:   #FBF8F2;
+
+  /* =====================================================================
+     SEMANTIC COLORS
+     ===================================================================== */
+  --bg:           var(--paper);
+  --bg-elevated:  var(--white);
+  --bg-inverse:   var(--ink-1000);
+  --bg-luxe:      var(--ink-900);        /* the "luxury" dark surface */
+  --bg-pattern:   var(--cw-latina-base); /* default monogram canvas bg */
+
+  --fg-1:    var(--ink-900);            /* headings, key body */
+  --fg-2:    var(--ink-700);            /* body */
+  --fg-3:    var(--ink-500);            /* labels, meta */
+  --fg-4:    var(--ink-400);            /* placeholders */
+  --fg-on-inverse: var(--cream);
+  --fg-on-magenta: var(--white);
+
+  --accent:        var(--magenta-500);
+  --accent-strong: var(--magenta-700);
+  --accent-soft:   var(--magenta-100);
+
+  --line:        rgba(17, 17, 17, 0.10);
+  --line-strong: rgba(17, 17, 17, 0.22);
+  --line-inverse: rgba(255, 255, 255, 0.14);
+
+  --success: #1FA85E;
+  --warning: #F5D000;
+  --danger:  #DC2626;
+  --info:    #1A3B8E;
+
+  /* =====================================================================
+     TYPE
+     ===================================================================== */
+  --font-display: 'Permanent Marker', 'Caveat Brush', cursive;       /* urban wordmark */
+  --font-serif:   'Playfair Display', 'Bodoni Moda', Georgia, serif; /* luxury LM side */
+  --font-impact:  'Anton', 'Bebas Neue', Impact, sans-serif;         /* varsity / athletic */
+  --font-script:  'Italiana', 'Cormorant SC', serif;                 /* decorative tagline */
+  --font-body:    'Manrope', ui-sans-serif, system-ui, sans-serif;   /* ui body */
+
+  /* Type scale — major-third (1.25) */
+  --fs-12: 0.75rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-30: 1.875rem;
+  --fs-36: 2.25rem;
+  --fs-48: 3rem;
+  --fs-60: 3.75rem;
+  --fs-72: 4.5rem;
+  --fs-96: 6rem;
+  --fs-128: 8rem;
+
+  --lh-tight: 0.95;
+  --lh-snug:  1.15;
+  --lh-base:  1.45;
+  --lh-loose: 1.65;
+
+  --tr-tight:  -0.02em;
+  --tr-normal: 0;
+  --tr-wide:   0.04em;
+  --tr-loud:   0.12em;   /* uppercase labels */
+
+  /* =====================================================================
+     SPACING — 4px base
+     ===================================================================== */
+  --s-2:  2px;
+  --s-4:  4px;
+  --s-6:  6px;
+  --s-8:  8px;
+  --s-12: 12px;
+  --s-16: 16px;
+  --s-20: 20px;
+  --s-24: 24px;
+  --s-32: 32px;
+  --s-40: 40px;
+  --s-48: 48px;
+  --s-64: 64px;
+  --s-80: 80px;
+  --s-96: 96px;
+  --s-128: 128px;
+
+  /* =====================================================================
+     RADII — minimal. Streetwear runs square, luxury runs pill.
+     ===================================================================== */
+  --r-0:    0;
+  --r-2:    2px;
+  --r-4:    4px;
+  --r-8:    8px;
+  --r-12:   12px;
+  --r-16:   16px;
+  --r-pill: 999px;
+
+  /* =====================================================================
+     ELEVATION — flat. Real depth comes from contrast, not shadow.
+     One soft elevation for cards; one hard "stamp" for impact CTAs.
+     ===================================================================== */
+  --shadow-flat:   none;
+  --shadow-card:   0 1px 0 rgba(17,17,17,0.04), 0 8px 24px -8px rgba(17,17,17,0.10);
+  --shadow-hover:  0 1px 0 rgba(17,17,17,0.04), 0 18px 40px -10px rgba(17,17,17,0.18);
+  --shadow-stamp:  4px 4px 0 0 var(--ink-1000);   /* hard offset, varsity feel */
+  --shadow-stamp-pink: 4px 4px 0 0 var(--magenta-500);
+  --shadow-inner-press: inset 0 2px 4px rgba(0,0,0,0.18);
+  --glow-magenta: 0 0 0 4px rgba(233, 30, 151, 0.22);
+
+  /* =====================================================================
+     MOTION — confident, no bouncy gimmicks. Snappy in, smooth out.
+     ===================================================================== */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-fast: 120ms;
+  --dur:      220ms;
+  --dur-slow: 420ms;
+}
+
+/* =========================================================================
+   SEMANTIC TYPE STYLES
+   ========================================================================= */
+
+.lm-wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.lm-h1, h1.lm {
+  font-family: var(--font-impact);
+  font-weight: 400;
+  font-size: clamp(var(--fs-48), 8vw, var(--fs-96));
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight);
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+
+.lm-h1-luxe {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(var(--fs-48), 7vw, var(--fs-72));
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight);
+  color: var(--fg-1);
+}
+
+.lm-h2, h2.lm {
+  font-family: var(--font-impact);
+  font-weight: 400;
+  font-size: clamp(var(--fs-30), 4vw, var(--fs-48));
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+  text-transform: uppercase;
+}
+
+.lm-h3, h3.lm {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--fs-24);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-tight);
+}
+
+.lm-tagline {
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--fs-20);
+  letter-spacing: 0.01em;
+  color: var(--magenta-400);
+}
+
+.lm-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: var(--tr-loud);
+  color: var(--magenta-500);
+}
+
+.lm-body, p.lm {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--fs-16);
+  line-height: var(--lh-base);
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+
+.lm-meta, .lm-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-12);
+  text-transform: uppercase;
+  letter-spacing: var(--tr-loud);
+  color: var(--fg-3);
+}
+
+.lm-price {
+  font-family: var(--font-impact);
+  font-weight: 400;
+  font-size: var(--fs-30);
+  letter-spacing: 0;
+}
+
+/* Base reset helpers — opt in by adding `lm-base` to <html> or <body> */
+.lm-base {
+  font-family: var(--font-body);
+  color: var(--fg-1);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

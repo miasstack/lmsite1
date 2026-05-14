@@ -1,0 +1,1994 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Latino Magic · For the culture</title>
+
+  <style>
+/* =========================================================================
+   LATINO MAGIC — Design Tokens (inlined from colors_and_type.css)
+   ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600;1,700&family=Anton&family=Italiana&family=Manrope:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
+
+:root {
+  --magenta-900: #5A0C6E;
+  --magenta-800: #7A1199;
+  --magenta-700: #9C1AAB;
+  --magenta-600: #C81FB4;
+  --magenta-500: #E91E97;
+  --magenta-400: #EC4DB5;
+  --magenta-300: #F472B6;
+  --magenta-200: #F9A8D4;
+  --magenta-100: #FCE7F3;
+  --magenta-50:  #FFF1FA;
+
+  --grad-lm: linear-gradient(135deg, #9C1AAB 0%, #E91E97 55%, #F472B6 100%);
+  --grad-lm-flat: #C81FB4;
+  --grad-lm-soft: linear-gradient(135deg, #F472B6 0%, #FFC7E3 100%);
+
+  --ink-1000: #050505;
+  --ink-900:  #111111;
+  --ink-800:  #1A1A1A;
+  --ink-700:  #2B2B2B;
+  --ink-600:  #4A4A4A;
+  --ink-500:  #6B6B6B;
+  --ink-400:  #8E8E8E;
+  --ink-300:  #B8B8B8;
+  --ink-200:  #DCDCDC;
+  --ink-100:  #ECECEC;
+  --ink-50:   #F5F5F5;
+  --cream:    #F7F1E5;
+  --paper:    #FBF8F2;
+  --white:    #FFFFFF;
+
+  --cw-latina-base:   #87C2DD;
+  --cw-latina-accent: #F4C3D2;
+  --cw-latina-trim:   #FFFFFF;
+
+  --cw-bandera-base:   #1A3B8E;
+  --cw-bandera-accent: #DC2626;
+  --cw-bandera-trim:   #F5D000;
+
+  --cw-selva-base:   #1FA85E;
+  --cw-selva-accent: #FFD200;
+  --cw-selva-trim:   #0B3D2E;
+
+  --cw-bandidas-base:   #181818;
+  --cw-bandidas-accent: #BC1F2D;
+  --cw-bandidas-trim:   #ECDFC6;
+
+  --cw-calle-base:   #D9A741;
+  --cw-calle-accent: #2B2B2B;
+  --cw-calle-trim:   #FBF8F2;
+
+  --bg:           var(--paper);
+  --bg-elevated:  var(--white);
+  --bg-inverse:   var(--ink-1000);
+  --bg-luxe:      var(--ink-900);
+  --bg-pattern:   var(--cw-latina-base);
+
+  --fg-1:    var(--ink-900);
+  --fg-2:    var(--ink-700);
+  --fg-3:    var(--ink-500);
+  --fg-4:    var(--ink-400);
+  --fg-on-inverse: var(--cream);
+  --fg-on-magenta: var(--white);
+
+  --accent:        var(--magenta-500);
+  --accent-strong: var(--magenta-700);
+  --accent-soft:   var(--magenta-100);
+
+  --line:        rgba(17, 17, 17, 0.10);
+  --line-strong: rgba(17, 17, 17, 0.22);
+  --line-inverse: rgba(255, 255, 255, 0.14);
+
+  --success: #1FA85E;
+  --warning: #F5D000;
+  --danger:  #DC2626;
+  --info:    #1A3B8E;
+
+  --font-display: 'Permanent Marker', 'Caveat Brush', cursive;
+  --font-serif:   'Playfair Display', 'Bodoni Moda', Georgia, serif;
+  --font-impact:  'Anton', 'Bebas Neue', Impact, sans-serif;
+  --font-script:  'Italiana', 'Cormorant SC', serif;
+  --font-body:    'Manrope', ui-sans-serif, system-ui, sans-serif;
+
+  --fs-12: 0.75rem;
+  --fs-14: 0.875rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-30: 1.875rem;
+  --fs-36: 2.25rem;
+  --fs-48: 3rem;
+  --fs-60: 3.75rem;
+  --fs-72: 4.5rem;
+  --fs-96: 6rem;
+  --fs-128: 8rem;
+
+  --lh-tight: 0.95;
+  --lh-snug:  1.15;
+  --lh-base:  1.45;
+  --lh-loose: 1.65;
+
+  --tr-tight:  -0.02em;
+  --tr-normal: 0;
+  --tr-wide:   0.04em;
+  --tr-loud:   0.12em;
+
+  --s-2:  2px;  --s-4:  4px;  --s-6:  6px;  --s-8:  8px;
+  --s-12: 12px; --s-16: 16px; --s-20: 20px; --s-24: 24px;
+  --s-32: 32px; --s-40: 40px; --s-48: 48px; --s-64: 64px;
+  --s-80: 80px; --s-96: 96px; --s-128: 128px;
+
+  --r-0: 0; --r-2: 2px; --r-4: 4px; --r-8: 8px;
+  --r-12: 12px; --r-16: 16px; --r-pill: 999px;
+
+  --shadow-flat:   none;
+  --shadow-card:   0 1px 0 rgba(17,17,17,0.04), 0 8px 24px -8px rgba(17,17,17,0.10);
+  --shadow-hover:  0 1px 0 rgba(17,17,17,0.04), 0 18px 40px -10px rgba(17,17,17,0.18);
+  --shadow-stamp:  4px 4px 0 0 var(--ink-1000);
+  --shadow-stamp-pink: 4px 4px 0 0 var(--magenta-500);
+  --shadow-inner-press: inset 0 2px 4px rgba(0,0,0,0.18);
+  --glow-magenta: 0 0 0 4px rgba(233, 30, 151, 0.22);
+
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:    cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-fast: 120ms;
+  --dur:      220ms;
+  --dur-slow: 420ms;
+}
+
+.lm-wordmark { font-family: var(--font-display); font-weight: 400; letter-spacing: var(--tr-wide); text-transform: uppercase; line-height: 1; }
+.lm-h1, h1.lm { font-family: var(--font-impact); font-weight: 400; font-size: clamp(var(--fs-48), 8vw, var(--fs-96)); line-height: var(--lh-tight); letter-spacing: var(--tr-tight); text-transform: uppercase; color: var(--fg-1); }
+.lm-h2, h2.lm { font-family: var(--font-impact); font-weight: 400; font-size: clamp(var(--fs-30), 4vw, var(--fs-48)); line-height: var(--lh-snug); letter-spacing: var(--tr-tight); text-transform: uppercase; }
+.lm-tagline { font-family: var(--font-script); font-weight: 400; font-style: italic; font-size: var(--fs-20); letter-spacing: 0.01em; color: var(--magenta-400); }
+.lm-eyebrow { font-family: var(--font-body); font-weight: 700; font-size: var(--fs-12); text-transform: uppercase; letter-spacing: var(--tr-loud); color: var(--magenta-500); }
+.lm-body, p.lm { font-family: var(--font-body); font-weight: 400; font-size: var(--fs-16); line-height: var(--lh-base); color: var(--fg-2); text-wrap: pretty; }
+.lm-meta, .lm-label { font-family: var(--font-body); font-weight: 500; font-size: var(--fs-12); text-transform: uppercase; letter-spacing: var(--tr-loud); color: var(--fg-3); }
+.lm-price { font-family: var(--font-impact); font-weight: 400; font-size: var(--fs-30); letter-spacing: 0; }
+.lm-base { font-family: var(--font-body); color: var(--fg-1); background: var(--bg); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+html, body { margin: 0; padding: 0; }
+body { background: var(--paper); }
+a { color: inherit; text-decoration: none; }
+* { box-sizing: border-box; }
+.lm-base ::-webkit-scrollbar { height: 6px; width: 6px; }
+.lm-base ::-webkit-scrollbar-thumb { background: var(--ink-300); border-radius: 999px; }
+
+@keyframes lmscroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+@keyframes lmFadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes lmRise   { from { transform: translateY(24px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+  </style>
+</head>
+<body class="lm-base">
+  <div id="app"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+/* ============================================================
+   COUNTDOWN BANNER
+   ============================================================ */
+function CountdownBanner() {
+  const target = useRef(null);
+  if (!target.current) {
+    target.current = Date.now() + 4 * 24 * 3600 * 1000 + 5 * 3600 * 1000 + 23 * 60 * 1000;
+  }
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const ms = Math.max(0, target.current - now);
+  const d = Math.floor(ms / 86400000);
+  const h = Math.floor((ms / 3600000) % 24);
+  const m = Math.floor((ms / 60000) % 60);
+  const s = Math.floor((ms / 1000) % 60);
+  const pad = (n) => String(n).padStart(2, '0');
+
+  return (
+    <div style={{
+      background: 'var(--ink-1000)',
+      color: 'var(--cream)',
+      borderBottom: '1px solid rgba(255,255,255,0.06)',
+      padding: '10px 24px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 22,
+      fontFamily: 'var(--font-body)',
+      fontWeight: 700,
+      fontSize: 11,
+      textTransform: 'uppercase',
+      letterSpacing: '0.18em',
+    }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--magenta-400)', boxShadow: '0 0 12px var(--magenta-400)' }} />
+        Drop 02 · Latina Magic
+      </span>
+      <span style={{ color: 'rgba(255,255,255,0.4)' }}>·</span>
+      <span>Limited edition · 200 pieces</span>
+      <span style={{ color: 'rgba(255,255,255,0.4)' }}>·</span>
+      <span style={{ display: 'inline-flex', alignItems: 'baseline', gap: 6 }}>
+        <span>Restock in</span>
+        <span style={{ fontFamily: 'ui-monospace, SF Mono, monospace', fontSize: 12, color: 'var(--magenta-300)', letterSpacing: '0.05em' }}>
+          {pad(d)}d · {pad(h)}h · {pad(m)}m · {pad(s)}s
+        </span>
+      </span>
+      <a style={{
+        marginLeft: 14,
+        background: 'var(--magenta-500)',
+        color: '#fff',
+        padding: '5px 12px',
+        cursor: 'pointer',
+        letterSpacing: '0.16em',
+      }}>Notify me →</a>
+    </div>
+  );
+}
+
+/* ============================================================
+   HEADER V2
+   ============================================================ */
+function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
+  const personas = ['Women', 'Men', 'Unisex', 'Sport', 'LM Luxe'];
+  const mega = {
+    'Women':   ['New', 'Tracksuits', 'Bikinis', 'Activewear', 'Tops', 'Joggers', 'Accessories', 'Sale'],
+    'Men':     ['New', 'Tracksuits', 'Tees', 'Bombers', 'Joggers', 'Shorts', 'Accessories', 'Sale'],
+    'Unisex':  ['New', 'Tees', 'Bombers', 'Hoodies', 'Accessories', 'Sale'],
+    'Sport':   ['New', 'Sports bras', 'Leggings', 'Sets', 'Shorts', 'Sale'],
+    'LM Luxe': ['Edition 01', 'Bombers', 'Silk', 'Handcrafted'],
+  };
+
+  return (
+    <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(251,248,242,0.94)', backdropFilter: 'blur(22px)', WebkitBackdropFilter: 'blur(22px)' }}>
+
+      {/* Persona switcher */}
+      <div style={{
+        background: '#fff',
+        borderBottom: '1px solid var(--line)',
+        padding: '0 32px',
+        display: 'flex',
+        gap: 0,
+        overflowX: 'auto',
+      }}>
+        {personas.map(p => (
+          <a key={p} onClick={() => setPersona(p)} style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.18em',
+            padding: '12px 18px',
+            cursor: 'pointer',
+            color: persona === p ? 'var(--ink-900)' : 'var(--ink-500)',
+            borderBottom: persona === p ? '2px solid var(--ink-900)' : '2px solid transparent',
+            transition: 'all 220ms var(--ease-out)',
+            whiteSpace: 'nowrap',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+            {p === 'LM Luxe' && <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--magenta-500)' }} />}
+            {p}
+          </a>
+        ))}
+      </div>
+
+      {/* Main bar — wordmark + utility */}
+      <div style={{
+        padding: '14px 32px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 24,
+      }}>
+        {/* Search */}
+        <div style={{ flex: 1, display: 'flex', maxWidth: 320 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            border: '1.5px solid var(--ink-900)',
+            background: 'transparent',
+            padding: '8px 14px',
+            width: '100%',
+          }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input placeholder="Search 'Bandera bomber', 'bikini'…" style={{
+              flex: 1,
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              fontFamily: 'var(--font-body)',
+              fontSize: 13,
+              color: 'var(--ink-900)',
+            }} />
+          </div>
+        </div>
+
+        {/* Center wordmark */}
+        <a style={{ textAlign: 'center', cursor: 'pointer' }}>
+          <div style={{
+            fontFamily: 'var(--font-impact)',
+            fontSize: 32,
+            lineHeight: 0.95,
+            textTransform: 'uppercase',
+            color: 'var(--ink-900)',
+          }}>LATINO MAGIC</div>
+          <div style={{
+            fontFamily: 'var(--font-script)',
+            fontStyle: 'italic',
+            fontSize: 14,
+            color: 'var(--magenta-500)',
+            marginTop: 2,
+          }}>You already know.</div>
+        </a>
+
+        {/* Utility */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 18 }}>
+          <a style={utilLink}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Wishlist</span>
+          </a>
+          <a style={utilLink}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+            <span>Account</span>
+          </a>
+          <button onClick={onOpenCart} style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            background: 'var(--ink-900)',
+            color: '#fff',
+            border: 'none',
+            padding: '9px 14px',
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            cursor: 'pointer',
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M6 6L4 2H1"/></svg>
+            Bolsa
+            <span style={{ background: 'var(--magenta-500)', color: '#fff', borderRadius: 999, padding: '1px 7px', fontSize: 10, minWidth: 16, textAlign: 'center' }}>{cartCount}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mega nav */}
+      <nav style={{
+        borderTop: '1px solid var(--line)',
+        background: 'rgba(251,248,242,0.94)',
+        padding: '11px 32px',
+        display: 'flex',
+        gap: 0,
+        overflowX: 'auto',
+        justifyContent: 'center',
+      }}>
+        {mega[persona].map((c, i) => (
+          <a key={c} style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.16em',
+            padding: '4px 18px',
+            cursor: 'pointer',
+            color: c === 'Sale' ? 'var(--cw-bandera-accent)' :
+                   c === 'New' ? 'var(--ink-900)' : 'var(--ink-700)',
+            whiteSpace: 'nowrap',
+            borderRight: i < mega[persona].length - 1 ? '1px solid var(--line)' : 'none',
+          }}>
+            {c === 'New' && <span style={{ marginRight: 4, color: 'var(--magenta-500)' }}>●</span>}
+            {c}
+          </a>
+        ))}
+      </nav>
+    </header>
+  );
+}
+
+const utilLink = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 7,
+  fontFamily: 'var(--font-body)',
+  fontWeight: 700,
+  fontSize: 11,
+  textTransform: 'uppercase',
+  letterSpacing: '0.14em',
+  color: 'var(--ink-800)',
+  cursor: 'pointer',
+};
+
+/* ============================================================
+   HERO V3 — Product-led, Fashion Nova style
+   ============================================================ */
+function HeroV3({ onShop }) {
+  return (
+    <section style={{
+      position: 'relative',
+      width: '100%',
+      height: 'min(82vh, 820px)',
+      minHeight: 580,
+      overflow: 'hidden',
+      background: '#0a0a0a',
+    }}>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: "url('../../assets/lookbook-bikini-beach-cartagena.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 20%',
+      }} />
+      <div style={{
+        position: 'absolute',
+        right: 0, top: 0, bottom: 0, width: '52%',
+        background: 'linear-gradient(270deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0) 100%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Top kicker */}
+      <div style={{
+        position: 'absolute',
+        top: 32,
+        left: 40,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        fontFamily: 'var(--font-body)',
+        fontWeight: 800,
+        fontSize: 10,
+        textTransform: 'uppercase',
+        letterSpacing: '0.28em',
+        color: '#fff',
+        background: 'rgba(0,0,0,0.55)',
+        backdropFilter: 'blur(8px)',
+        padding: '7px 12px',
+      }}>
+        <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--magenta-400)', boxShadow: '0 0 12px var(--magenta-400)' }} />
+        Drop 02 · Bestseller
+      </div>
+
+      {/* Right-side product callout */}
+      <div style={{
+        position: 'absolute',
+        right: 48,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        maxWidth: 460,
+        textAlign: 'left',
+        color: '#fff',
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-body)',
+          fontWeight: 800,
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: '0.28em',
+          color: 'var(--magenta-300)',
+          marginBottom: 18,
+          textShadow: '0 1px 6px rgba(0,0,0,0.5)',
+        }}>Women · Swim</div>
+
+        <h1 style={{
+          margin: 0,
+          fontFamily: 'var(--font-impact)',
+          fontSize: 'clamp(56px, 7vw, 112px)',
+          lineHeight: 0.88,
+          letterSpacing: '-0.025em',
+          textTransform: 'uppercase',
+          color: '#fff',
+          textShadow: '0 2px 24px rgba(0,0,0,0.45)',
+        }}>
+          LM Bikini<br/>Cartagena
+        </h1>
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 14,
+          marginTop: 22,
+        }}>
+          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 40, color: '#fff', lineHeight: 1 }}>$95</div>
+          <div style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 13,
+            color: 'rgba(255,255,255,0.75)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            fontWeight: 600,
+          }}>3 colorways · XS–L</div>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 28 }}>
+          <button onClick={onShop} style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            fontSize: 13,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            padding: '17px 32px',
+            background: '#fff',
+            color: 'var(--ink-1000)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background 220ms var(--ease-out)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'var(--magenta-300)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}>
+            Shop now →
+          </button>
+          <a style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: '#fff',
+            cursor: 'pointer',
+            borderBottom: '1px solid rgba(255,255,255,0.5)',
+            paddingBottom: 4,
+          }}>View all swim</a>
+        </div>
+      </div>
+
+      {/* Bottom-left location */}
+      <div style={{
+        position: 'absolute',
+        left: 40,
+        bottom: 40,
+        fontFamily: 'var(--font-script)',
+        fontStyle: 'italic',
+        fontSize: 22,
+        color: 'rgba(255,255,255,0.85)',
+        textShadow: '0 2px 12px rgba(0,0,0,0.5)',
+      }}>
+        Cartagena, Colombia
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   GENDER SPLIT
+   ============================================================ */
+function GenderSplit() {
+  const [hover, setHover] = useState(null);
+  const sides = [
+    {
+      id: 'women',
+      label: 'Women',
+      tag: 'Shop her favorites',
+      img: '../../assets/lookbook-stairs-latina-tracksuit.png',
+      cta: 'Shop Women',
+      bg: '#87C2DD',
+    },
+    {
+      id: 'men',
+      label: 'Men',
+      tag: 'First menswear drop',
+      img: '../../assets/lookbook-mens-bandera-tracksuit-front.png',
+      cta: 'Shop Men',
+      bg: '#1A3B8E',
+    },
+  ];
+  return (
+    <section style={{ background: 'var(--paper)' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        {sides.map(s => (
+          <a key={s.id}
+            onMouseEnter={() => setHover(s.id)}
+            onMouseLeave={() => setHover(null)}
+            style={{
+              cursor: 'pointer',
+              position: 'relative',
+              height: 520,
+              background: s.bg,
+              overflow: 'hidden',
+              display: 'block',
+            }}>
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url('${s.img}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 18%',
+              transform: hover === s.id ? 'scale(1.04)' : 'scale(1)',
+              transition: 'transform 600ms var(--ease-out)',
+            }} />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.7) 100%)',
+              pointerEvents: 'none',
+            }} />
+            <div style={{ position: 'absolute', left: 32, bottom: 32, right: 32, color: '#fff' }}>
+              <div style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 10,
+                textTransform: 'uppercase',
+                letterSpacing: '0.28em',
+                color: 'var(--magenta-300)',
+                marginBottom: 8,
+              }}>{s.tag}</div>
+              <div style={{
+                fontFamily: 'var(--font-impact)',
+                fontSize: 82,
+                lineHeight: 0.9,
+                letterSpacing: '-0.02em',
+                textTransform: 'uppercase',
+              }}>{s.label}</div>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 18,
+                padding: '12px 20px',
+                background: '#fff',
+                color: 'var(--ink-1000)',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 12,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+              }}>{s.cta} →</div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   DROP MARQUEE
+   ============================================================ */
+function DropMarquee() {
+  const items = [];
+  for (let i = 0; i < 10; i++) {
+    items.push(
+      <span key={`a${i}`} style={{ fontFamily: 'var(--font-display)', fontSize: 40, color: 'var(--cream)' }}>Latino Magic</span>,
+      <span key={`b${i}`} style={{ fontFamily: 'var(--font-impact)', fontSize: 36, color: 'var(--magenta-300)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Drop 02</span>,
+      <span key={`c${i}`} style={{ fontFamily: 'var(--font-script)', fontStyle: 'italic', fontSize: 32, color: 'var(--cream)' }}>The Culture</span>,
+      <span key={`d${i}`} style={{ fontFamily: 'var(--font-impact)', fontSize: 36, color: 'var(--cream)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>11 · 11 · 12pm EST</span>,
+    );
+  }
+  return (
+    <div style={{
+      background: 'var(--ink-1000)',
+      overflow: 'hidden',
+      padding: '18px 0',
+      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderBottom: '1px solid rgba(255,255,255,0.06)',
+    }}>
+      <div style={{
+        display: 'inline-flex',
+        gap: 48,
+        alignItems: 'center',
+        whiteSpace: 'nowrap',
+        animation: 'lmscroll 50s linear infinite',
+        paddingRight: 48,
+      }}>
+        {items}
+        {items}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   SHOP BY CATEGORY
+   ============================================================ */
+function ShopByCategory() {
+  const cats = [
+    { name: 'Tracksuits', bg: '#87C2DD', img: '../../assets/lookbook-stairs-latina-tracksuit.png',         fit: 'cover' },
+    { name: 'Bikinis',    bg: '#87C2DD', img: '../../assets/lookbook-bikini-beach-cartagena.png',          fit: 'cover' },
+    { name: 'Active',     bg: '#BC1F2D', img: '../../assets/lookbook-red-tribal-set-night.png',            fit: 'cover' },
+    { name: 'Bombers',    bg: '#1A3B8E', img: '../../assets/lookbook-mens-bandera-tracksuit-front.png',    fit: 'cover' },
+    { name: 'Tops',       bg: '#BC1F2D', img: '../../assets/lookbook-sports-bra-red-wall.png',             fit: 'cover' },
+    { name: 'Joggers',    bg: '#1A3B8E', img: '../../assets/lookbook-mens-bandera-tracksuit-down.png',     fit: 'cover' },
+    { name: 'LM Luxe',    bg: '#0a0a0a', img: '../../assets/logo-lm-monogram-male.png',                    fit: 'contain', luxe: true },
+  ];
+  return (
+    <section style={{ background: 'var(--paper)', padding: '64px 32px 96px' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 26 }}>
+          <h2 style={{
+            margin: 0,
+            fontFamily: 'var(--font-impact)',
+            fontSize: 48,
+            lineHeight: 0.95,
+            letterSpacing: '-0.02em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-900)',
+          }}>Shop by category</h2>
+          <a style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.16em',
+            color: 'var(--ink-900)',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            textUnderlineOffset: 4,
+          }}>View all →</a>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+          {cats.map(c => (
+            <a key={c.name} style={{ cursor: 'pointer', display: 'block' }}>
+              <div style={{
+                aspectRatio: '4/5',
+                background: c.bg,
+                backgroundImage: `url('${c.img}')`,
+                backgroundSize: c.fit === 'contain' ? '70% auto' : 'cover',
+                backgroundPosition: c.fit === 'contain' ? 'center' : 'center 18%',
+                backgroundRepeat: 'no-repeat',
+                position: 'relative',
+                overflow: 'hidden',
+                filter: c.luxe ? 'drop-shadow(0 12px 24px rgba(233,30,151,0.4))' : 'none',
+                transition: 'transform 320ms var(--ease-out)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}>
+                <div style={{
+                  position: 'absolute',
+                  left: 0, right: 0, bottom: 0,
+                  height: 56,
+                  background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.7) 100%)',
+                }} />
+              </div>
+              <div style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 12,
+                textTransform: 'uppercase',
+                letterSpacing: '0.14em',
+                marginTop: 10,
+                color: 'var(--ink-900)',
+                textAlign: 'center',
+              }}>{c.name}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   PRODUCT CARD
+   ============================================================ */
+function ProductCard({ product, onQuickView }) {
+  const [hover, setHover] = useState(false);
+  const img = product.images[hover && product.images.length > 1 ? 1 : 0];
+
+  return (
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: '#fff',
+        border: '1px solid var(--line)',
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: 'pointer',
+        transition: 'box-shadow 220ms var(--ease-out), transform 220ms var(--ease-out)',
+        boxShadow: hover
+          ? '0 1px 0 rgba(17,17,17,0.04), 0 18px 40px -10px rgba(17,17,17,0.18)'
+          : '0 1px 0 rgba(17,17,17,0.04), 0 8px 24px -8px rgba(17,17,17,0.10)',
+        transform: hover ? 'translateY(-3px)' : 'translateY(0)',
+      }}
+    >
+      <div style={{
+        position: 'relative',
+        aspectRatio: '4/5',
+        backgroundColor: product.swatch,
+        backgroundImage: `url('../../${img}')`,
+        backgroundSize: product.fit === 'contain' ? 'contain' : 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        overflow: 'hidden',
+      }}>
+        {product.tag && (
+          <span style={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 10,
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            padding: '5px 9px',
+            background: product.tagBg || 'var(--magenta-500)',
+            color: '#fff',
+          }}>{product.tag}</span>
+        )}
+        {hover && (
+          <button onClick={(e) => { e.stopPropagation(); onQuickView(product); }} style={{
+            position: 'absolute',
+            left: 12,
+            right: 12,
+            bottom: 12,
+            padding: '12px 0',
+            background: 'var(--ink-900)',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            fontSize: 12,
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+          }}>+ Quickview</button>
+        )}
+      </div>
+      <div style={{ padding: '14px 14px 16px' }}>
+        <div style={{
+          fontFamily: 'var(--font-body)',
+          fontWeight: 800,
+          fontSize: 14,
+          textTransform: 'uppercase',
+          letterSpacing: '-0.005em',
+          lineHeight: 1.2,
+          color: 'var(--ink-900)',
+        }}>{product.name}</div>
+        <div style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: 'var(--fg-3)',
+          marginTop: 4,
+        }}>{product.subtitle}</div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          marginTop: 12,
+        }}>
+          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 22, color: 'var(--ink-900)' }}>${product.price}</div>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {product.colorways.map((c, i) => (
+              <span key={i} style={{ width: 10, height: 10, background: c, borderRadius: 999, border: '1px solid rgba(0,0,0,0.08)' }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   PRODUCTS DATA + PRODUCT GRID
+   ============================================================ */
+const PRODUCTS = [
+  {
+    id: 'tracksuit-latina',
+    name: 'Latina Magic Tracksuit',
+    subtitle: 'Hoodie + jogger · Latina colorway',
+    price: 185,
+    images: [
+      'assets/lookbook-stairs-latina-tracksuit.png',
+      'assets/lookbook-stairs-latina-tracksuit-2.png',
+      'assets/lookbook-stone-wall-latina-tracksuit.png',
+    ],
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#F4C3D2', '#181818'],
+    tag: 'Drop 02',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    desc: 'Cropped hooded jacket + cuffed jogger. Signature fit. The bestseller.',
+  },
+  {
+    id: 'tracksuit-bandera-mens',
+    name: 'Bandera Tracksuit',
+    subtitle: 'Men · bomber + jogger',
+    price: 245,
+    images: [
+      'assets/lookbook-mens-bandera-tracksuit-front.png',
+      'assets/lookbook-mens-bandera-tracksuit-lean.png',
+      'assets/lookbook-mens-bandera-tracksuit-full.png',
+      'assets/lookbook-mens-bandera-tracksuit-stand.png',
+    ],
+    swatch: '#1A3B8E',
+    colorways: ['#1A3B8E'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    desc: 'Royal-blue bomber + jogger with all-over LM monogram. Red-and-yellow varsity trim. Statement piece.',
+  },
+  {
+    id: 'bikini-lm-blue',
+    name: 'LM Bikini · Cartagena',
+    subtitle: 'Triangle · recycled nylon',
+    price: 95,
+    images: [
+      'assets/lookbook-bikini-beach-cartagena.png',
+      'assets/product-bikini-blue-front.png',
+      'assets/product-bikini-blue-back.png',
+    ],
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#E8B5BB', '#C9B5E0'],
+    tag: 'Bestseller',
+    tagBg: 'var(--cw-bandera-accent)',
+    sizes: ['XS', 'S', 'M', 'L'],
+    desc: 'String triangle bikini with embroidered LM. Recycled nylon. Tan lines guaranteed.',
+  },
+  {
+    id: 'bikini-pink',
+    name: 'LM Bikini · Rosa',
+    subtitle: 'Triangle · recycled nylon',
+    price: 95,
+    images: [
+      'assets/lookbook-bikini-pink-front.png',
+      'assets/lookbook-bikini-pink-pose.png',
+    ],
+    swatch: '#E8B5BB',
+    colorways: ['#E8B5BB', '#87C2DD', '#C9B5E0'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L'],
+    desc: 'Soft-pink LM bikini. Lightweight, lined. Softest thing you will wear.',
+  },
+  {
+    id: 'bikini-purple-chimba',
+    name: '"Es Una Chimba" Bikini',
+    subtitle: 'Tagline edition · purple',
+    price: 95,
+    images: ['assets/lookbook-bikini-purple-back-chimba.png'],
+    swatch: '#C9B5E0',
+    colorways: ['#C9B5E0'],
+    tag: 'Tagline',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L'],
+    desc: '"Es una chimba" printed across the back. Self-evident.',
+  },
+  {
+    id: 'activewear-red-tribal',
+    name: 'Red Tribal Active Set',
+    subtitle: 'Sports bra + leggings',
+    price: 145,
+    images: [
+      'assets/lookbook-red-tribal-set-night.png',
+      'assets/lookbook-red-tribal-set-ferns.png',
+      'assets/lookbook-red-tribal-set-studio.png',
+    ],
+    swatch: '#BC1F2D',
+    colorways: ['#BC1F2D', '#181818', '#E8B5BB'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    desc: 'High-impact sports bra + sculpting leggings with tribal print and Latina Magic waistband.',
+  },
+  {
+    id: 'activewear-baroque',
+    name: 'Baroque Active Set',
+    subtitle: 'Black × gold · sports bra + leggings',
+    price: 155,
+    images: [
+      'assets/lookbook-baroque-set-front.png',
+      'assets/lookbook-baroque-set-side.png',
+    ],
+    swatch: '#181818',
+    colorways: ['#181818', '#BC1F2D', '#E8B5BB'],
+    tag: 'Drop 02',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    desc: 'Black and gold filigree, signature Latina Magic waistband. Made for the night.',
+  },
+  {
+    id: 'activewear-pink-tattoo',
+    name: 'Rosa Tattoo Active Set',
+    subtitle: 'Sports bra + leggings',
+    price: 140,
+    images: [
+      'assets/lookbook-gym-pink-set-front.png',
+      'assets/lookbook-gym-pink-set-side.png',
+    ],
+    swatch: '#E8B5BB',
+    colorways: ['#E8B5BB', '#BC1F2D', '#181818'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    desc: 'Soft-pink tattoo-art leggings with hand-script Latina Magic. Serious in the gym.',
+  },
+  {
+    id: 'sports-bra-red',
+    name: 'Latina Magic Sports Bra',
+    subtitle: 'Standalone · red ornate',
+    price: 65,
+    images: [
+      'assets/lookbook-sports-bra-red-wall.png',
+      'assets/product-sports-bra-red-front.png',
+      'assets/product-sports-bra-red-side.png',
+    ],
+    swatch: '#BC1F2D',
+    colorways: ['#BC1F2D', '#181818'],
+    tag: 'Bestseller',
+    tagBg: 'var(--cw-bandera-accent)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    desc: 'Signature red-ornate top. Built for cardio, club, or both.',
+  },
+];
+
+function ProductGrid({ onQuickView, title = 'The drop', filterFn, filters }) {
+  const allFilters = filters || ['All', 'Tracksuits', 'Activewear', 'Bikinis', 'Tops'];
+  const [active, setActive] = useState('Todo');
+  const list = (filterFn ? PRODUCTS.filter(filterFn) : PRODUCTS).filter(p => {
+    if (active === 'All') return true;
+    if (active === 'Tracksuits') return p.id.includes('tracksuit');
+    if (active === 'Activewear') return p.id.includes('activewear') || p.id.includes('sports-bra');
+    if (active === 'Bikinis') return p.id.includes('bikini');
+    if (active === 'Tops') return p.id.includes('sports-bra');
+    return true;
+  });
+  return (
+    <section style={{ padding: '32px 32px 96px', maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
+        <h2 style={{
+          margin: 0,
+          fontFamily: 'var(--font-impact)',
+          fontSize: 48,
+          lineHeight: 0.95,
+          letterSpacing: '-0.02em',
+          textTransform: 'uppercase',
+          color: 'var(--ink-900)',
+        }}>{title}</h2>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {allFilters.map(f => (
+            <button key={f} onClick={() => setActive(f)} style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 700,
+              fontSize: 11,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              padding: '8px 14px',
+              background: active === f ? 'var(--ink-900)' : 'transparent',
+              color: active === f ? '#fff' : 'var(--ink-700)',
+              border: '1.5px solid var(--ink-900)',
+              cursor: 'pointer',
+            }}>{f}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        {list.map(p => <ProductCard key={p.id} product={p} onQuickView={onQuickView} />)}
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   SHOP THE LATEST
+   ============================================================ */
+function ShopTheLatest({ onQuickView }) {
+  const tabs = ['For you', 'New', 'Sale', 'Bikinis', 'Bombers', 'Bandidas'];
+  const [active, setActive] = useState('For you');
+  const ordered = useMemo(() => {
+    const arr = [...PRODUCTS];
+    if (active === 'New') return arr.filter(p => p.tag === 'New' || p.tag === 'Drop 02').concat(arr);
+    if (active === 'Sale') return arr.slice().reverse();
+    if (active === 'Bikinis') return arr.filter(p => p.id.includes('bikini')).concat(arr);
+    if (active === 'Bombers') return arr.filter(p => p.id.includes('bomber')).concat(arr);
+    if (active === 'Bandidas') return arr.filter(p => p.id.includes('bandidas')).concat(arr);
+    return arr;
+  }, [active]);
+
+  return (
+    <section style={{ background: 'var(--ink-100)', padding: '96px 32px' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          marginBottom: 28,
+          flexWrap: 'wrap',
+          gap: 16,
+        }}>
+          <h2 style={{
+            margin: 0,
+            fontFamily: 'var(--font-impact)',
+            fontSize: 56,
+            lineHeight: 0.92,
+            letterSpacing: '-0.02em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-900)',
+          }}>Shop the latest</h2>
+          <div style={{ display: 'flex', gap: 0 }}>
+            {tabs.map(t => (
+              <button key={t} onClick={() => setActive(t)} style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 12,
+                textTransform: 'uppercase',
+                letterSpacing: '0.14em',
+                padding: '10px 18px',
+                background: active === t ? 'var(--ink-900)' : 'transparent',
+                color: active === t ? '#fff' : 'var(--ink-700)',
+                border: 'none',
+                borderBottom: active === t ? '2px solid var(--magenta-500)' : '2px solid transparent',
+                cursor: 'pointer',
+                transition: 'all 220ms var(--ease-out)',
+              }}>{t}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridAutoFlow: 'column',
+          gridAutoColumns: 'calc((100% - 36px) / 4)',
+          gap: 12,
+          overflowX: 'auto',
+          paddingBottom: 14,
+          scrollSnapType: 'x mandatory',
+        }}>
+          {ordered.slice(0, 8).map(p => (
+            <div key={p.id + active} style={{ scrollSnapAlign: 'start' }}>
+              <ProductCard product={p} onQuickView={onQuickView} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   ACTIVE BANNER
+   ============================================================ */
+function ActiveBanner() {
+  return (
+    <section style={{ background: 'var(--ink-1000)', color: 'var(--cream)' }}>
+      <div style={{
+        maxWidth: 1400,
+        margin: '0 auto',
+        display: 'grid',
+        gridTemplateColumns: '6fr 5fr',
+        gap: 0,
+        minHeight: 540,
+      }}>
+        <div style={{
+          backgroundImage: "url('../../assets/lookbook-red-tribal-set-night.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center 25%',
+          position: 'relative',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: 24,
+            left: 24,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(8px)',
+            padding: '7px 12px',
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            fontSize: 10,
+            textTransform: 'uppercase',
+            letterSpacing: '0.28em',
+            color: 'var(--magenta-300)',
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--magenta-400)' }} />
+            Latina Magic · Active
+          </div>
+        </div>
+
+        <div style={{ padding: '64px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.28em',
+            color: 'var(--magenta-300)',
+            marginBottom: 16,
+          }}>Activewear</div>
+          <h2 style={{
+            margin: 0,
+            fontFamily: 'var(--font-impact)',
+            fontSize: 88,
+            lineHeight: 0.92,
+            letterSpacing: '-0.025em',
+            textTransform: 'uppercase',
+            color: 'var(--cream)',
+          }}>
+            Sweat<br/>in style.
+          </h2>
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 15,
+            lineHeight: 1.6,
+            color: 'rgba(247,241,229,0.75)',
+            marginTop: 22,
+            maxWidth: 360,
+          }}>
+            Sculpting compression meets signature design. Built for the gym and the club.
+          </p>
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+            {['Red Tribal · $145', 'Black + Gold · $155', 'Rosa Tattoo · $140', 'Sports Bra · $65'].map(c => (
+              <span key={c} style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 700,
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: '0.14em',
+                padding: '8px 14px',
+                background: 'rgba(247,241,229,0.08)',
+                color: 'var(--cream)',
+                border: '1px solid rgba(247,241,229,0.18)',
+              }}>{c}</span>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
+            <button style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 800,
+              fontSize: 12,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              padding: '16px 28px',
+              background: 'var(--cream)',
+              color: 'var(--ink-1000)',
+              border: 'none',
+              cursor: 'pointer',
+            }}>Shop all active →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   LOOKBOOK BAND
+   ============================================================ */
+function LookbookBand() {
+  return (
+    <section style={{ background: 'var(--ink-1000)', padding: '96px 0' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px' }}>
+        <div style={{
+          fontFamily: 'var(--font-body)',
+          fontWeight: 800,
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: '0.28em',
+          color: 'var(--magenta-300)',
+          marginBottom: 14,
+        }}>Lookbook · Fall '26</div>
+        <h2 style={{
+          margin: '0 0 36px',
+          fontFamily: 'var(--font-impact)',
+          fontSize: 64,
+          lineHeight: 0.95,
+          letterSpacing: '-0.025em',
+          textTransform: 'uppercase',
+          color: 'var(--cream)',
+        }}>
+          The street is <span style={{ color: 'var(--magenta-300)' }}>yours.</span>
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, height: 540 }}>
+          <div style={{
+            backgroundImage: "url('../../assets/lookbook-mens-bandera-tracksuit-front.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 20%',
+          }} />
+          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
+            <div style={{
+              backgroundImage: "url('../../assets/lookbook-stairs-latina-tracksuit.png')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 15%',
+            }} />
+            <div style={{
+              backgroundImage: "url('../../assets/lookbook-baroque-set-front.png')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 15%',
+            }} />
+          </div>
+          <div style={{
+            backgroundImage: "url('../../assets/lookbook-bikini-beach-cartagena.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 20%',
+          }} />
+        </div>
+        <div style={{ marginTop: 28, textAlign: 'center' }}>
+          <button style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 800,
+            fontSize: 12,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            padding: '16px 36px',
+            background: 'transparent',
+            color: 'var(--cream)',
+            border: '1.5px solid rgba(247,241,229,0.4)',
+            cursor: 'pointer',
+          }}>View the full lookbook →</button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   APP PROMO
+   ============================================================ */
+function AppPromo() {
+  const storeBtn = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '12px 18px',
+    background: 'transparent',
+    border: '1px solid rgba(247,241,229,0.4)',
+    color: 'var(--cream)',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    fontFamily: 'var(--font-body)',
+  };
+  return (
+    <section style={{ background: 'var(--ink-1000)', color: 'var(--cream)' }}>
+      <div style={{
+        maxWidth: 1400,
+        margin: '0 auto',
+        padding: '0 32px',
+        display: 'grid',
+        gridTemplateColumns: '5fr 7fr',
+        alignItems: 'stretch',
+        minHeight: 460,
+      }}>
+        {/* Left: phone mockup */}
+        <div style={{
+          position: 'relative',
+          backgroundImage: "url('../../assets/pattern-monogram-baby-blue.jpg')",
+          backgroundSize: '400px auto',
+          backgroundPosition: 'center',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0.15) 50%, rgba(5,5,5,0.85) 100%)',
+          }} />
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 220,
+            aspectRatio: '9/19',
+            background: '#000',
+            borderRadius: 32,
+            border: '6px solid #1a1a1a',
+            boxShadow: '0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              flex: 1,
+              backgroundImage: "url('../../assets/lookbook-latina-tracksuit-front.jpg')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 25%',
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute',
+                left: 14, top: 14,
+                fontFamily: 'var(--font-impact)',
+                fontSize: 16,
+                color: '#fff',
+                textTransform: 'uppercase',
+              }}>L M</div>
+              <div style={{
+                position: 'absolute',
+                bottom: 14, left: 14, right: 14,
+                color: '#fff',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+              }}>
+                <div style={{ opacity: 0.7, fontWeight: 600, marginBottom: 4 }}>Drop 02</div>
+                <div>Latina Tracksuit</div>
+                <div style={{
+                  marginTop: 10,
+                  background: 'var(--magenta-500)',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  textAlign: 'center',
+                  fontSize: 10,
+                  letterSpacing: '0.16em',
+                }}>+ Add to bag</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: copy */}
+        <div style={{ padding: '80px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.32em',
+            color: 'var(--magenta-300)',
+            marginBottom: 18,
+          }}>The app</div>
+          <h2 style={{
+            margin: 0,
+            fontFamily: 'var(--font-serif)',
+            fontStyle: 'italic',
+            fontWeight: 700,
+            fontSize: 64,
+            lineHeight: 0.95,
+            letterSpacing: '-0.02em',
+            color: 'var(--cream)',
+          }}>
+            Shop <span style={{ color: 'var(--magenta-300)' }}>faster</span>.
+          </h2>
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 16,
+            fontWeight: 300,
+            lineHeight: 1.65,
+            color: 'rgba(247,241,229,0.7)',
+            marginTop: 22,
+            maxWidth: 480,
+          }}>
+            Drop alerts, early access to capsules, and one-tap restocks. Stay first.
+          </p>
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
+            <a style={storeBtn}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 12.5c0-2.6 2.1-3.9 2.2-3.9-1.2-1.7-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.4 1-4.3 2.6-1.8 3.2-.5 7.9 1.3 10.5.9 1.3 1.9 2.7 3.3 2.6 1.3-.1 1.8-.9 3.4-.9s2 .9 3.4.8c1.4 0 2.3-1.3 3.2-2.6.7-1 1.2-2 1.6-3-.1 0-3.1-1.2-3.1-4.1zM15 5.4c.7-.9 1.2-2.1 1-3.4-1.1.1-2.4.8-3.1 1.6-.6.8-1.2 2-1 3.3 1.2.1 2.4-.6 3.1-1.5z"/></svg>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 9, opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.14em' }}>Download on the</div>
+                <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1 }}>App Store</div>
+              </div>
+            </a>
+            <a style={storeBtn}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 2.7v18.6c0 .6.2 1 .6 1.2L14.5 12 3.6 1.5c-.4.2-.6.6-.6 1.2zM16.8 14.3l-2.7-1.5L4.3 22.5c.4 0 .8-.1 1.3-.4l13.1-7.4-1.9-.4zM21.4 10.7l-3.6-2-3.1 3.3 3.1 3.3 3.6-2c1.2-.7 1.2-1.9 0-2.6zM5.6 1.5c-.5-.3-.9-.4-1.3-.4l9.8 9.7 2.7-1.5L5.6 1.5z"/></svg>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 9, opacity: 0.7, textTransform: 'uppercase', letterSpacing: '0.14em' }}>Get it on</div>
+                <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1 }}>Google Play</div>
+              </div>
+            </a>
+          </div>
+
+          <div style={{ display: 'flex', gap: 32, marginTop: 48, paddingTop: 32, borderTop: '1px solid rgba(247,241,229,0.1)' }}>
+            {[
+              ['4.9★', 'App Store rating'],
+              ['250k+', 'Downloads'],
+              ['24/7', 'Drop alerts'],
+            ].map(([v, l]) => (
+              <div key={l}>
+                <div style={{ fontFamily: 'var(--font-impact)', fontSize: 32, color: 'var(--cream)', lineHeight: 1 }}>{v}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(247,241,229,0.55)', marginTop: 6 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
+   QUICK VIEW MODAL
+   ============================================================ */
+function QuickView({ product, onClose, onAdd }) {
+  const [size, setSize] = useState(null);
+  const [imgIdx, setImgIdx] = useState(0);
+  if (!product) return null;
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(0,0,0,0.55)',
+      zIndex: 100,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 32,
+      animation: 'lmFadeIn 220ms var(--ease-out)',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: 'var(--paper)',
+        width: 'min(1000px, 100%)',
+        maxHeight: '88vh',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        overflow: 'hidden',
+        animation: 'lmRise 320ms var(--ease-out)',
+        position: 'relative',
+      }}>
+        <button onClick={onClose} style={{
+          position: 'absolute',
+          top: 14,
+          right: 14,
+          width: 36,
+          height: 36,
+          background: 'rgba(0,0,0,0.65)',
+          color: '#fff',
+          border: 'none',
+          fontSize: 18,
+          cursor: 'pointer',
+          zIndex: 2,
+        }}>×</button>
+
+        {/* Image */}
+        <div style={{
+          background: product.swatch,
+          backgroundImage: `url('../../${product.images[imgIdx]}')`,
+          backgroundSize: product.fit === 'contain' ? 'contain' : 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          aspectRatio: '4/5',
+          position: 'relative',
+        }}>
+          {product.images.length > 1 && (
+            <div style={{ position: 'absolute', bottom: 14, left: 14, display: 'flex', gap: 6 }}>
+              {product.images.map((_, i) => (
+                <button key={i} onClick={() => setImgIdx(i)} style={{
+                  width: 30, height: 4, border: 'none', cursor: 'pointer',
+                  background: i === imgIdx ? '#fff' : 'rgba(255,255,255,0.4)',
+                }} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Details */}
+        <div style={{ padding: '40px 36px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+          <div style={{
+            fontFamily: 'var(--font-body)',
+            fontWeight: 700,
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.14em',
+            color: 'var(--magenta-500)',
+          }}>{product.subtitle}</div>
+          <h2 style={{
+            margin: '6px 0 0',
+            fontFamily: 'var(--font-impact)',
+            fontSize: 38,
+            lineHeight: 1,
+            letterSpacing: '-0.01em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-900)',
+          }}>{product.name}</h2>
+          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, color: 'var(--ink-900)', marginTop: 14 }}>${product.price}</div>
+
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 14,
+            lineHeight: 1.55,
+            color: 'var(--ink-700)',
+            marginTop: 18,
+          }}>{product.desc}</p>
+
+          <div style={{ marginTop: 24 }}>
+            <div style={{
+              fontFamily: 'var(--font-body)',
+              fontWeight: 700,
+              fontSize: 11,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: 'var(--fg-3)',
+              marginBottom: 8,
+            }}>Size</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {product.sizes.map(s => (
+                <button key={s} onClick={() => setSize(s)} style={{
+                  minWidth: 52,
+                  padding: '11px 14px',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 700,
+                  fontSize: 13,
+                  letterSpacing: '0.04em',
+                  background: size === s ? 'var(--ink-900)' : 'transparent',
+                  color: size === s ? '#fff' : 'var(--ink-900)',
+                  border: '1.5px solid var(--ink-900)',
+                  cursor: 'pointer',
+                }}>{s}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 28 }}>
+            <button onClick={() => { onAdd({ ...product, size }); onClose(); }} disabled={!size} style={{
+              flex: 1,
+              padding: '16px 24px',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 800,
+              fontSize: 13,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              background: size ? 'var(--ink-900)' : 'var(--ink-300)',
+              color: '#fff',
+              border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-300)'),
+              boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none',
+              cursor: size ? 'pointer' : 'not-allowed',
+            }}>
+              {size ? 'Add to bag →' : 'Pick a size'}
+            </button>
+          </div>
+
+          <div style={{
+            marginTop: 22,
+            paddingTop: 22,
+            borderTop: '1px solid var(--line)',
+            fontFamily: 'var(--font-body)',
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            color: 'var(--fg-3)',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+            <span>Free shipping +$150</span>
+            <span>14-day returns</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   CART DRAWER
+   ============================================================ */
+function CartDrawer({ open, items, onClose, onRemove }) {
+  const subtotal = items.reduce((s, it) => s + it.price, 0);
+  return (
+    <>
+      {open && (
+        <div onClick={onClose} style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.4)',
+          zIndex: 90,
+          animation: 'lmFadeIn 220ms var(--ease-out)',
+        }} />
+      )}
+      <aside style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        height: '100vh',
+        width: 420,
+        maxWidth: '100vw',
+        background: 'var(--paper)',
+        zIndex: 91,
+        transform: open ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 320ms var(--ease-out)',
+        display: 'flex',
+        flexDirection: 'column',
+        borderLeft: '1px solid var(--line)',
+      }}>
+        <div style={{
+          padding: '20px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid var(--line)',
+        }}>
+          <div style={{
+            fontFamily: 'var(--font-impact)',
+            fontSize: 28,
+            textTransform: 'uppercase',
+            letterSpacing: '-0.01em',
+            color: 'var(--ink-900)',
+          }}>Your Bag</div>
+          <button onClick={onClose} style={{ width: 32, height: 32, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--ink-700)' }}>×</button>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 24px' }}>
+          {items.length === 0 ? (
+            <div style={{ padding: '40px 0', textAlign: 'center' }}>
+              <div style={{
+                fontFamily: 'var(--font-script)',
+                fontStyle: 'italic',
+                fontSize: 26,
+                color: 'var(--magenta-400)',
+                marginBottom: 6,
+              }}>Still empty.</div>
+              <div style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
+                color: 'var(--fg-3)',
+                marginBottom: 22,
+              }}>Add something fire from the drop.</div>
+              <button onClick={onClose} style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 12,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                padding: '14px 28px',
+                background: 'var(--ink-900)',
+                color: '#fff',
+                border: '2px solid var(--ink-900)',
+                cursor: 'pointer',
+              }}>Keep shopping</button>
+            </div>
+          ) : (
+            items.map((it, idx) => (
+              <div key={idx} style={{
+                display: 'flex',
+                gap: 14,
+                padding: '14px 0',
+                borderBottom: '1px solid var(--line)',
+              }}>
+                <div style={{
+                  width: 78,
+                  height: 92,
+                  background: it.swatch,
+                  backgroundImage: `url('../../${it.images[0]}')`,
+                  backgroundSize: it.fit === 'contain' ? 'contain' : 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                  flexShrink: 0,
+                }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 800,
+                    fontSize: 13,
+                    textTransform: 'uppercase',
+                    letterSpacing: '-0.005em',
+                    lineHeight: 1.2,
+                    color: 'var(--ink-900)',
+                  }}>{it.name}</div>
+                  <div style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 11,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: 'var(--fg-3)',
+                    marginTop: 3,
+                  }}>{it.subtitle} · Size {it.size}</div>
+                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontFamily: 'var(--font-impact)', fontSize: 18, color: 'var(--ink-900)' }}>${it.price}</div>
+                    <button onClick={() => onRemove(idx)} style={{
+                      background: 'transparent',
+                      border: 'none',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: 11,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      color: 'var(--fg-3)',
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      textUnderlineOffset: 3,
+                    }}>Remove</button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <div style={{ padding: 24, borderTop: '1px solid var(--line)', background: '#fff' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)' }}>Subtotal</div>
+              <div style={{ fontFamily: 'var(--font-impact)', fontSize: 24, color: 'var(--ink-900)' }}>${subtotal}</div>
+            </div>
+            <button style={{
+              width: '100%',
+              padding: '16px 24px',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 800,
+              fontSize: 13,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              background: 'var(--ink-900)',
+              color: '#fff',
+              border: '2px solid var(--ink-900)',
+              boxShadow: '4px 4px 0 0 var(--magenta-500)',
+              cursor: 'pointer',
+            }}>Checkout →</button>
+            <div style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 11,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: 'var(--fg-3)',
+              marginTop: 12,
+              textAlign: 'center',
+            }}>{subtotal >= 150 ? '✓ Free shipping included' : `Add $${150 - subtotal} for free shipping`}</div>
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+function Footer() {
+  const cols = [
+    { title: 'Shop', items: ['Women', 'Men', 'Unisex', 'Sport', 'LM Luxe'] },
+    { title: 'The House', items: ['Lookbook', 'Drop calendar', 'About', 'Press'] },
+    { title: 'Help', items: ['Size guide', 'Shipping', 'Returns', 'Contact'] },
+  ];
+  return (
+    <footer style={{ background: 'var(--ink-1000)', color: 'var(--cream)', padding: '72px 32px 28px' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48 }}>
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-impact)',
+              fontSize: 48,
+              lineHeight: 0.95,
+              letterSpacing: '-0.02em',
+              textTransform: 'uppercase',
+              color: 'var(--cream)',
+            }}>LATINO<br/>MAGIC</div>
+            <div style={{
+              fontFamily: 'var(--font-script)',
+              fontStyle: 'italic',
+              fontSize: 22,
+              color: 'var(--magenta-300)',
+              marginTop: 10,
+            }}>You already know.</div>
+            <div style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 13,
+              color: 'rgba(247,241,229,0.6)',
+              marginTop: 22,
+              maxWidth: 280,
+              lineHeight: 1.55,
+            }}>
+              Streetwear and luxury for the culture. Designed in Brooklyn.
+            </div>
+            <div style={{
+              display: 'flex',
+              marginTop: 22,
+              border: '1.5px solid rgba(247,241,229,0.3)',
+              maxWidth: 320,
+            }}>
+              <input placeholder="Your email" style={{
+                flex: 1,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                padding: '12px 14px',
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
+                color: 'var(--cream)',
+              }} />
+              <button style={{
+                background: 'var(--magenta-500)',
+                color: '#fff',
+                border: 'none',
+                padding: '0 18px',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                cursor: 'pointer',
+              }}>Join →</button>
+            </div>
+          </div>
+          {cols.map(col => (
+            <div key={col.title}>
+              <div style={{
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: '0.14em',
+                color: 'var(--magenta-300)',
+                marginBottom: 16,
+              }}>{col.title}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {col.items.map(i => (
+                  <a key={i} style={{
+                    fontFamily: 'var(--font-body)',
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: 'rgba(247,241,229,0.85)',
+                    cursor: 'pointer',
+                  }}>{i}</a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Varsity stripes divider */}
+        <div style={{ marginTop: 56 }}>
+          <div style={{ height: 4, background: '#F5D000' }} />
+          <div style={{ height: 8, background: '#1A3B8E' }} />
+          <div style={{ height: 4, background: '#F5D000' }} />
+        </div>
+
+        <div style={{
+          marginTop: 28,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          fontFamily: 'var(--font-body)',
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: '0.14em',
+          color: 'rgba(247,241,229,0.5)',
+        }}>
+          <span>© 2026 Latino Magic · All rights reserved</span>
+          <span>For the culture ★</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ============================================================
+   APP V2 — ROOT
+   ============================================================ */
+function AppV2() {
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [quickView, setQuickView] = useState(null);
+  const [persona, setPersona] = useState('Women');
+
+  const addToCart = (item) => { setCart(c => [...c, item]); setCartOpen(true); };
+  const removeFromCart = (idx) => setCart(c => c.filter((_, i) => i !== idx));
+
+  return (
+    <div className="lm-base" style={{ background: 'var(--paper)', color: 'var(--ink-900)', minHeight: '100vh' }}>
+      <CountdownBanner />
+      <HeaderV2 cartCount={cart.length} onOpenCart={() => setCartOpen(true)} persona={persona} setPersona={setPersona} />
+      <main>
+        <HeroV3 onShop={() => document.getElementById('latest')?.scrollIntoView({ behavior: 'smooth' })} />
+        <GenderSplit />
+        <ShopByCategory />
+        <div id="latest"><ShopTheLatest onQuickView={setQuickView} /></div>
+        <ActiveBanner />
+        <ProductGrid
+          onQuickView={setQuickView}
+          title="Women · Favorites"
+          filterFn={p => /tracksuit-latina|bikini|activewear|sports-bra/.test(p.id)}
+          filters={['All', 'Bikinis', 'Activewear', 'Tops', 'Tracksuits']}
+        />
+        <LookbookBand />
+        <DropMarquee />
+        <AppPromo />
+      </main>
+      <Footer />
+      <QuickView product={quickView} onClose={() => setQuickView(null)} onAdd={addToCart} />
+      <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onRemove={removeFromCart} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<AppV2 />);
+  </script>
+</body>
+</html>
