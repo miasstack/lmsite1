@@ -4,12 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Latino Magic · For the culture</title>
+  <link rel="icon" type="image/png" href="../../assets/logo-lm-monogram.png">
 
   <style>
 /* =========================================================================
    LATINO MAGIC — Design Tokens (inlined from colors_and_type.css)
    ========================================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600;1,700&family=Anton&family=Italiana&family=Manrope:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
+
 
 :root {
   --magenta-900: #5A0C6E;
@@ -163,6 +165,71 @@ a { color: inherit; text-decoration: none; }
 @keyframes lmscroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 @keyframes lmFadeIn { from { opacity: 0 } to { opacity: 1 } }
 @keyframes lmRise   { from { transform: translateY(24px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+/* ── Focus visible ───────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--magenta-500);
+  outline-offset: 2px;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--magenta-500);
+  outline-offset: 2px;
+}
+
+/* ── Skip to content ─────────────────────────── */
+.lm-skip {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  background: var(--magenta-500);
+  color: #fff;
+  padding: 10px 18px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  z-index: 9999;
+  transition: top 0ms;
+}
+.lm-skip:focus { top: 8px; }
+
+/* ── Reduced motion ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Mobile responsive ───────────────────────── */
+@media (max-width: 767px) {
+  .lm-gender-grid  { grid-template-columns: 1fr !important; }
+  .lm-cats-grid    { grid-template-columns: repeat(4, 1fr) !important; }
+  .lm-products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .lm-footer-grid  { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+  .lm-active-grid  { grid-template-columns: 1fr !important; }
+  .lm-app-grid     { grid-template-columns: 1fr !important; }
+  .lm-lookbook-grid { grid-template-columns: 1fr 1fr !important; height: auto !important; }
+  .lm-lookbook-main { display: none !important; }
+  .lm-hero-callout { right: 16px !important; left: 16px !important; max-width: 100% !important; text-align: center !important; }
+  .lm-persona-bar  { display: none !important; }
+  .lm-search-bar   { display: none !important; }
+  .lm-mega-nav     { padding: 8px 16px !important; justify-content: flex-start !important; }
+  .lm-header-main  { padding: 10px 16px !important; }
+  .lm-active-left  { min-height: 260px !important; }
+  .lm-active-right { padding: 40px 24px !important; }
+  .lm-app-left     { min-height: 220px !important; }
+  .lm-app-right    { padding: 40px 24px !important; }
+  .lm-section-pad  { padding: 48px 16px !important; }
+  .lm-cats-section { padding: 48px 16px 64px !important; }
+  .lm-footer-inner { padding: 48px 16px 24px !important; }
+}
+@media (max-width: 479px) {
+  .lm-cats-grid    { grid-template-columns: repeat(3, 1fr) !important; }
+  .lm-products-grid { grid-template-columns: 1fr 1fr !important; }
+}
   </style>
 </head>
 <body class="lm-base">
@@ -174,6 +241,16 @@ a { color: inherit; text-decoration: none; }
 
   <script type="text/babel">
 const { useState, useEffect, useRef, useMemo, useContext, createContext } = React;
+
+function useMobile() {
+  const [m, setM] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setM(window.innerWidth < 768);
+    window.addEventListener('resize', handler, { passive: true });
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return m;
+}
 
 /* ============================================================
    TRANSLATIONS
@@ -197,7 +274,7 @@ const TRANSLATIONS = {
     heroColorways: '3 colorways · XS–L',
     shopNow: 'Shop now →',
     viewAllSwim: 'View all swim',
-    heroLocation: 'Rio de Janeiro, Brazil',
+    heroLocation: 'Cartagena, Colombia',
     // Gender split
     shopHerFaves: 'Shop her favorites',
     firstMenswear: 'First menswear drop',
@@ -270,7 +347,7 @@ const TRANSLATIONS = {
     heroColorways: '3 colores · XS–L',
     shopNow: 'Ver ahora →',
     viewAllSwim: 'Ver todo swim',
-    heroLocation: 'Río de Janeiro, Brasil',
+    heroLocation: 'Cartagena, Colombia',
     // Gender split
     shopHerFaves: 'Sus favoritas',
     firstMenswear: 'Primera colección masculina',
@@ -410,7 +487,7 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
     <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(251,248,242,0.94)', backdropFilter: 'blur(22px)', WebkitBackdropFilter: 'blur(22px)' }}>
 
       {/* Persona switcher */}
-      <div style={{
+      <div className="lm-persona-bar" style={{
         background: '#fff',
         borderBottom: '1px solid var(--line)',
         padding: '0 32px',
@@ -442,7 +519,7 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
       </div>
 
       {/* Main bar — wordmark + utility */}
-      <div style={{
+      <div className="lm-header-main" style={{
         padding: '14px 32px',
         display: 'flex',
         alignItems: 'center',
@@ -450,7 +527,7 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
         gap: 24,
       }}>
         {/* Search */}
-        <div style={{ flex: 1, display: 'flex', maxWidth: 320 }}>
+        <div className="lm-search-bar" style={{ flex: 1, display: 'flex', maxWidth: 320 }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -461,15 +538,20 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
             width: '100%',
           }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input placeholder={str.searchPlaceholder} style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              background: 'transparent',
-              fontFamily: 'var(--font-body)',
-              fontSize: 13,
-              color: 'var(--ink-900)',
-            }} />
+            <input
+              type="search"
+              aria-label={lang === 'en' ? 'Search products' : 'Buscar productos'}
+              placeholder={str.searchPlaceholder}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
+                color: 'var(--ink-900)',
+              }}
+            />
           </div>
         </div>
 
@@ -493,15 +575,18 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
 
         {/* Utility */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 18 }}>
-          <a style={utilLink}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <a style={utilLink} aria-label={str.wishlist} role="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             <span>{str.wishlist}</span>
           </a>
-          <a style={utilLink}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
+          <a style={utilLink} aria-label={str.account} role="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
             <span>{str.account}</span>
           </a>
-          <button onClick={() => setLang(lang === 'en' ? 'es' : 'en')} style={{
+          <button
+            onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
+            aria-label={lang === 'en' ? 'Switch to Spanish' : 'Cambiar a inglés'}
+            style={{
             display: 'inline-flex',
             alignItems: 'center',
             background: 'transparent',
@@ -520,7 +605,10 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
             <span style={{ opacity: 0.3 }}>|</span>
             <span style={{ opacity: lang === 'es' ? 1 : 0.4 }}>ES</span>
           </button>
-          <button onClick={onOpenCart} style={{
+          <button
+            onClick={onOpenCart}
+            aria-label={lang === 'en' ? `Open cart, ${cartCount} items` : `Abrir bolsa, ${cartCount} artículos`}
+            style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: 10,
@@ -543,7 +631,7 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona }) {
       </div>
 
       {/* Mega nav */}
-      <nav style={{
+      <nav className="lm-mega-nav" aria-label="Product categories" style={{
         borderTop: '1px solid var(--line)',
         background: 'rgba(251,248,242,0.94)',
         padding: '11px 32px',
@@ -605,9 +693,9 @@ function HeroV3({ onShop }) {
       <div style={{
         position: 'absolute',
         inset: 0,
-        backgroundImage: "url('../../assets/lookbook-bikini-black-lm-rio-stairs.jpg')",
+        backgroundImage: "url('../../assets/lookbook-bikini-beach-cartagena.png')",
         backgroundSize: 'cover',
-        backgroundPosition: 'center 15%',
+        backgroundPosition: 'center top',
       }} />
       <div style={{
         position: 'absolute',
@@ -639,7 +727,7 @@ function HeroV3({ onShop }) {
       </div>
 
       {/* Right-side product callout */}
-      <div style={{
+      <div className="lm-hero-callout" style={{
         position: 'absolute',
         right: 48,
         top: '50%',
@@ -764,7 +852,7 @@ function GenderSplit() {
   ];
   return (
     <section style={{ background: 'var(--paper)' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div className="lm-gender-grid" style={{ maxWidth: 1400, margin: '0 auto', padding: '0 12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         {sides.map(s => (
           <a key={s.id}
             onMouseEnter={() => setHover(s.id)}
@@ -883,7 +971,7 @@ function ShopByCategory() {
     { name: 'LM Luxe',    bg: '#0a0a0a', img: '../../assets/logo-lm-monogram-male.png',                    fit: 'contain', luxe: true },
   ];
   return (
-    <section style={{ background: 'var(--paper)', padding: '64px 32px 96px' }}>
+    <section className="lm-cats-section" style={{ background: 'var(--paper)', padding: '64px 32px 96px' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 26 }}>
           <h2 style={{
@@ -907,7 +995,7 @@ function ShopByCategory() {
             textUnderlineOffset: 4,
           }}>{str.viewAll}</a>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+        <div className="lm-cats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
           {cats.map(c => (
             <a key={c.name} style={{ cursor: 'pointer', display: 'block' }}>
               <div style={{
@@ -954,6 +1042,7 @@ function ShopByCategory() {
    ============================================================ */
 function ProductCard({ product, onQuickView }) {
   const [hover, setHover] = useState(false);
+  const isMobile = useMobile();
   const img = product.images[hover && product.images.length > 1 ? 1 : 0];
 
   return (
@@ -998,23 +1087,28 @@ function ProductCard({ product, onQuickView }) {
             color: '#fff',
           }}>{product.tag}</span>
         )}
-        {hover && (
-          <button onClick={(e) => { e.stopPropagation(); onQuickView(product); }} style={{
-            position: 'absolute',
-            left: 12,
-            right: 12,
-            bottom: 12,
-            padding: '12px 0',
-            background: 'var(--ink-900)',
-            color: '#fff',
-            border: 'none',
-            cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-            fontWeight: 800,
-            fontSize: 12,
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-          }}>+ Quickview</button>
+        {(hover || isMobile) && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
+            aria-label={`Quick view ${product.name}`}
+            style={{
+              position: 'absolute',
+              left: 12,
+              right: 12,
+              bottom: 12,
+              padding: '12px 0',
+              background: 'var(--ink-900)',
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 800,
+              fontSize: 12,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              minHeight: 44,
+            }}
+          >+ Quickview</button>
         )}
       </div>
       <div style={{ padding: '14px 14px 16px' }}>
@@ -1282,7 +1376,7 @@ function ProductGrid({ onQuickView, title = 'The drop', filterFn, filters }) {
           ))}
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+      <div className="lm-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
         {list.map(p => <ProductCard key={p.id} product={p} onQuickView={onQuickView} />)}
       </div>
     </section>
@@ -1308,7 +1402,7 @@ function ShopTheLatest({ onQuickView }) {
   }, [active]);
 
   return (
-    <section style={{ background: 'var(--ink-100)', padding: '96px 32px' }}>
+    <section className="lm-section-pad" style={{ background: 'var(--ink-100)', padding: '96px 32px' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <div style={{
           display: 'flex',
@@ -1381,13 +1475,13 @@ function ActiveBanner() {
         gridTemplateColumns: '6fr 5fr',
         gap: 0,
         minHeight: 540,
-      }}>
+      }} className="lm-active-grid">
         <div style={{
           backgroundImage: "url('../../assets/lookbook-red-tribal-set-night.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center 25%',
           position: 'relative',
-        }}>
+        }} className="lm-active-left">
           <div style={{
             position: 'absolute',
             top: 24,
@@ -1410,7 +1504,7 @@ function ActiveBanner() {
           </div>
         </div>
 
-        <div style={{ padding: '64px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div className="lm-active-right" style={{ padding: '64px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{
             fontFamily: 'var(--font-body)',
             fontWeight: 800,
@@ -1506,13 +1600,13 @@ function LookbookBand() {
         }}>
           {str.lookbookLine1}<span style={{ color: 'var(--magenta-300)' }}>{str.lookbookAccent}</span>
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, height: 540 }}>
-          <div style={{
+        <div className="lm-lookbook-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, height: 540 }}>
+          <div className="lm-lookbook-main" style={{
             backgroundImage: "url('../../assets/lookbook-bikini-black-lm-rio-stairs.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center 15%',
           }} />
-          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr', gap: 12, minHeight: 260 }}>
             <div style={{
               backgroundImage: "url('../../assets/lookbook-stairs-latina-tracksuit.png')",
               backgroundSize: 'cover',
@@ -1576,7 +1670,7 @@ function AppPromo() {
         gridTemplateColumns: '5fr 7fr',
         alignItems: 'stretch',
         minHeight: 460,
-      }}>
+      }} className="lm-app-grid">
         {/* Left: phone mockup */}
         <div style={{
           position: 'relative',
@@ -1647,7 +1741,7 @@ function AppPromo() {
         </div>
 
         {/* Right: copy */}
-        <div style={{ padding: '80px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div className="lm-app-right" style={{ padding: '80px 56px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{
             fontFamily: 'var(--font-body)',
             fontWeight: 700,
@@ -1737,28 +1831,36 @@ function QuickView({ product, onClose, onAdd }) {
       padding: 32,
       animation: 'lmFadeIn 220ms var(--ease-out)',
     }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: 'var(--paper)',
-        width: 'min(1000px, 100%)',
-        maxHeight: '88vh',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        overflow: 'hidden',
-        animation: 'lmRise 320ms var(--ease-out)',
-        position: 'relative',
-      }}>
-        <button onClick={onClose} style={{
+      <div
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={product.name}
+        style={{
+          background: 'var(--paper)',
+          width: 'min(1000px, 100%)',
+          maxHeight: '88vh',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          overflow: 'hidden',
+          animation: 'lmRise 320ms var(--ease-out)',
+          position: 'relative',
+        }}>
+        <button onClick={onClose} aria-label="Close" style={{
           position: 'absolute',
           top: 14,
           right: 14,
-          width: 36,
-          height: 36,
+          width: 44,
+          height: 44,
           background: 'rgba(0,0,0,0.65)',
           color: '#fff',
           border: 'none',
           fontSize: 18,
           cursor: 'pointer',
           zIndex: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>×</button>
 
         {/* Image */}
@@ -1897,7 +1999,11 @@ function CartDrawer({ open, items, onClose, onRemove }) {
           animation: 'lmFadeIn 220ms var(--ease-out)',
         }} />
       )}
-      <aside style={{
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label={str ? str.yourBag : 'Your Bag'}
+        style={{
         position: 'fixed',
         top: 0,
         right: 0,
@@ -1926,7 +2032,7 @@ function CartDrawer({ open, items, onClose, onRemove }) {
             letterSpacing: '-0.01em',
             color: 'var(--ink-900)',
           }}>{str.yourBag}</div>
-          <button onClick={onClose} style={{ width: 32, height: 32, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--ink-700)' }}>×</button>
+          <button onClick={onClose} aria-label="Close cart" style={{ width: 44, height: 44, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--ink-700)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px 24px' }}>
@@ -2062,9 +2168,9 @@ function Footer() {
     { title: str.helpCol, items: [str.sizeGuide, str.shipping, str.returns, str.contact] },
   ];
   return (
-    <footer style={{ background: 'var(--ink-1000)', color: 'var(--cream)', padding: '72px 32px 28px' }}>
+    <footer className="lm-footer-inner" style={{ background: 'var(--ink-1000)', color: 'var(--cream)', padding: '72px 32px 28px' }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48 }}>
+        <div className="lm-footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48 }}>
           <div>
             <div style={{
               fontFamily: 'var(--font-impact)',
@@ -2097,16 +2203,22 @@ function Footer() {
               border: '1.5px solid rgba(247,241,229,0.3)',
               maxWidth: 320,
             }}>
-              <input placeholder={str.emailPlaceholder} style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                padding: '12px 14px',
-                fontFamily: 'var(--font-body)',
-                fontSize: 13,
-                color: 'var(--cream)',
-              }} />
+              <input
+                type="email"
+                aria-label={str.emailPlaceholder}
+                placeholder={str.emailPlaceholder}
+                autoComplete="email"
+                style={{
+                  flex: 1,
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  padding: '12px 14px',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 13,
+                  color: 'var(--cream)',
+                }}
+              />
               <button style={{
                 background: 'var(--magenta-500)',
                 color: '#fff',
@@ -2166,7 +2278,11 @@ function Footer() {
           color: 'rgba(247,241,229,0.5)',
         }}>
           <span>{str.copyright}</span>
-          <span>{str.forTheCulture}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <a href="https://www.instagram.com/latino.magic/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'rgba(247,241,229,0.6)', textDecoration: 'none', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>Instagram</a>
+            <a href="https://www.tiktok.com/@latinamagic" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: 'rgba(247,241,229,0.6)', textDecoration: 'none', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase' }}>TikTok</a>
+            <span style={{ color: 'rgba(247,241,229,0.5)' }}>{str.forTheCulture}</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -2190,9 +2306,10 @@ function AppV2() {
   return (
     <LangContext.Provider value={{ str, lang, setLang }}>
       <div className="lm-base" style={{ background: 'var(--paper)', color: 'var(--ink-900)', minHeight: '100vh' }}>
+        <a href="#main-content" className="lm-skip">Skip to content</a>
         <CountdownBanner />
         <HeaderV2 cartCount={cart.length} onOpenCart={() => setCartOpen(true)} persona={persona} setPersona={setPersona} />
-        <main>
+        <main id="main-content">
           <HeroV3 onShop={() => document.getElementById('latest')?.scrollIntoView({ behavior: 'smooth' })} />
           <GenderSplit />
           <ShopByCategory />
@@ -2206,7 +2323,6 @@ function AppV2() {
           />
           <LookbookBand />
           <DropMarquee />
-          <AppPromo />
         </main>
         <Footer />
         <QuickView product={quickView} onClose={() => setQuickView(null)} onAdd={addToCart} />
