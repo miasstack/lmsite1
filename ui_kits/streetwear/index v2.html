@@ -693,9 +693,9 @@ function HeroV3({ onShop }) {
       <div style={{
         position: 'absolute',
         inset: 0,
-        backgroundImage: "url('../../assets/lookbook-bikini-beach-cartagena.png')",
+        backgroundImage: "url('../../assets/lookbook-bikini-black-lm-cartagena-wide.jpg')",
         backgroundSize: 'cover',
-        backgroundPosition: 'center top',
+        backgroundPosition: 'center center',
       }} />
       <div style={{
         position: 'absolute',
@@ -1152,6 +1152,25 @@ function ProductCard({ product, onQuickView, onCardClick }) {
    PRODUCTS DATA + PRODUCT GRID
    ============================================================ */
 const PRODUCTS = [
+  {
+    id: 'bikini-black-lm-bandidas',
+    name: 'LM Bandidas Bikini',
+    subtitle: 'Black · signature monogram',
+    price: 98,
+    images: [
+      'assets/lookbook-bikini-black-lm-cartagena-wide.jpg',
+      'assets/lookbook-bikini-black-lm-cartagena-1.jpg',
+      'assets/lookbook-bikini-black-lm-cartagena-2.jpg',
+    ],
+    swatch: '#181818',
+    colorways: ['#181818', '#87C2DD', '#E8B5BB'],
+    tag: 'Bestseller',
+    tagBg: 'var(--cw-bandidas-accent)',
+    sizes: ['XS', 'S', 'M', 'L'],
+    category: 'bikinis',
+    gender: 'women',
+    desc: 'Black triangle bikini with oversized white LM monogram. Tie-side bottoms. Recycled nylon. Tan lines guaranteed.',
+  },
   {
     id: 'tracksuit-latina',
     name: 'Latina Magic Tracksuit',
