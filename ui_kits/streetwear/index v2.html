@@ -4124,148 +4124,7 @@ function AccountPanel({ open, onClose, wishlist, onOpenWishlist }) {
     },
   ];
 
-  // Dashboard content
-  function DashboardPane() {
-    return (
-      <div>
-        <div style={{ marginBottom: 28 }}>
-          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 38, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', lineHeight: 1 }}>
-            {profile ? `Hi, ${profile.name.split(' ')[0]}` : 'Welcome'}
-          </div>
-          {profile && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#999', marginTop: 6 }}>{profile.email}</div>}
-        </div>
-
-        {/* Stats row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-          <div
-            onClick={() => { onClose(); onOpenWishlist(); }}
-            style={{ padding: '18px 16px', background: '#fafafa', border: '1px solid #eee', cursor: 'pointer', transition: 'border-color 180ms' }}
-          >
-            <div style={{ marginBottom: 8 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill={wishlist.length > 0 ? 'var(--magenta-500)' : 'none'} stroke={wishlist.length > 0 ? 'var(--magenta-500)' : '#bbb'} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </div>
-            <div style={{ fontFamily: 'var(--font-impact)', fontSize: 26, color: 'var(--ink-900)' }}>{wishlist.length}</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999', marginTop: 2 }}>Saved Items</div>
-          </div>
-          <div
-            onClick={() => setTab('orders')}
-            style={{ padding: '18px 16px', background: '#fafafa', border: '1px solid #eee', cursor: 'pointer', transition: 'border-color 180ms' }}
-          >
-            <div style={{ marginBottom: 8 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="1.5"><path d="M5 8h14M5 8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8l1 10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2L19 8"/><path d="M10 12h4"/></svg>
-            </div>
-            <div style={{ fontFamily: 'var(--font-impact)', fontSize: 26, color: 'var(--ink-900)' }}>{orders.length}</div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999', marginTop: 2 }}>Orders</div>
-          </div>
-        </div>
-
-        {/* Quick links */}
-        {[
-          { label: 'View My Orders', action: () => setTab('orders'), icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg> },
-          { label: 'Edit My Info', action: () => setTab('info'), icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg> },
-          { label: 'View Saved Items', action: () => { onClose(); onOpenWishlist(); }, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg> },
-          { label: 'Continue Shopping', action: () => { onClose(); navigate('store'); }, icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg> },
-        ].map((item, i) => (
-          <div
-            key={i}
-            onClick={item.action}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #eee', cursor: 'pointer' }}
-          >
-            <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink-900)' }}>{item.label}</span>
-            {item.icon}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // Orders pane
-  function OrdersPane() {
-    return (
-      <div>
-        <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', marginBottom: 20 }}>My Orders</div>
-        {orders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0' }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.2" style={{ marginBottom: 16 }}><path d="M5 8h14M5 8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8l1 10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2L19 8"/></svg>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#999', marginBottom: 20, lineHeight: 1.6 }}>No orders yet.<br/>Go find something you love.</div>
-            <button onClick={() => { onClose(); navigate('store'); }} style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', padding: '14px 28px', background: 'var(--ink-900)', color: '#fff', border: 'none', cursor: 'pointer' }}>Shop Now</button>
-          </div>
-        ) : (
-          <div>
-            {orders.slice().reverse().map((o, i) => (
-              <div key={i} style={{ padding: '16px 0', borderBottom: '1px solid #eee' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink-900)' }}>{o.ref}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#999', marginTop: 3 }}>{o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</div>
-                  </div>
-                  {o.total && <div style={{ fontFamily: 'var(--font-impact)', fontSize: 20, color: 'var(--ink-900)' }}>${o.total}</div>}
-                </div>
-                <div style={{ marginTop: 8, display: 'inline-block', padding: '4px 10px', background: '#f5f5f5', fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#666' }}>Payment Pending</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // My Info pane
-  function InfoPane() {
-    return (
-      <div>
-        <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', marginBottom: 20 }}>My Info</div>
-        <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div>
-            <label htmlFor="acct-name" style={labelStyle}>Full Name *</label>
-            <input id="acct-name" type="text" required placeholder="Your name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
-          </div>
-          <div>
-            <label htmlFor="acct-email" style={labelStyle}>Email Address *</label>
-            <input id="acct-email" type="email" required placeholder="your@email.com" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
-          </div>
-          {formStep === 'saved' && (
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#1a7a3f', padding: '10px 14px', background: '#f0faf4', border: '1px solid #b6e8cc' }}>✓ Profile updated successfully</div>
-          )}
-          {formStep === 'error' && (
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#c0392b', padding: '10px 14px', background: '#fef0ee', border: '1px solid #f5c2bb' }}>Something went wrong. Please try again.</div>
-          )}
-          <button type="submit" disabled={formStep === 'saving'} style={{ width: '100%', padding: '16px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', background: 'var(--ink-900)', color: '#fff', border: 'none', cursor: formStep === 'saving' ? 'wait' : 'pointer' }}>
-            {formStep === 'saving' ? 'Saving...' : 'Save Changes'}
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  // Guest create-account form
-  function GuestPane() {
-    return (
-      <div>
-        <div style={{ fontFamily: 'var(--font-impact)', fontSize: 34, textTransform: 'uppercase', color: 'var(--ink-900)', marginBottom: 6 }}>Create Account</div>
-        <div style={{ fontFamily: 'var(--font-script)', fontStyle: 'italic', fontSize: 18, color: 'var(--magenta-500)', marginBottom: 20 }}>Únete a la familia</div>
-        <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#888', lineHeight: 1.6, marginBottom: 28 }}>
-          Save your wishlist, track orders, and get early access to new drops.
-        </div>
-        <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <div>
-            <label htmlFor="acct-name" style={labelStyle}>Full Name *</label>
-            <input id="acct-name" type="text" required placeholder="Your name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
-          </div>
-          <div>
-            <label htmlFor="acct-email" style={labelStyle}>Email Address *</label>
-            <input id="acct-email" type="email" required placeholder="your@email.com" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
-          </div>
-          {formStep === 'error' && (
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#c0392b', padding: '10px 14px', background: '#fef0ee', border: '1px solid #f5c2bb' }}>Something went wrong. Please try again.</div>
-          )}
-          <button type="submit" disabled={formStep === 'saving'} style={{ width: '100%', padding: '18px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: 'none', boxShadow: '4px 4px 0 0 var(--magenta-500)', cursor: formStep === 'saving' ? 'wait' : 'pointer' }}>
-            {formStep === 'saving' ? 'Creating...' : 'Create Account →'}
-          </button>
-        </form>
-      </div>
-    );
-  }
+  const chevron = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>;
 
   return (
     <>
@@ -4281,30 +4140,18 @@ function AccountPanel({ open, onClose, wishlist, onOpenWishlist }) {
         {/* ── DARK LEFT SIDEBAR (only when signed in) ── */}
         {profile && (
           <div style={{ width: 150, background: 'var(--ink-900)', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-            {/* Close */}
-            <div style={{ padding: '18px 0 18px 0', display: 'flex', justifyContent: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ padding: '18px 0', display: 'flex', justifyContent: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
               <button onClick={onClose} aria-label="Close" style={{ width: 40, height: 40, background: 'transparent', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
             </div>
-
-            {/* Nav items */}
             <nav style={{ flex: 1, paddingTop: 8 }}>
               {navItems.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => setTab(item.id)}
-                  style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '18px 8px', background: tab === item.id ? 'rgba(255,255,255,0.08)' : 'transparent', border: 'none', borderLeft: tab === item.id ? '3px solid var(--magenta-500)' : '3px solid transparent', cursor: 'pointer', color: tab === item.id ? '#fff' : 'rgba(255,255,255,0.45)', transition: 'all 180ms' }}
-                >
+                <button key={item.id} onClick={() => setTab(item.id)} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '18px 8px', background: tab === item.id ? 'rgba(255,255,255,0.08)' : 'transparent', border: 'none', borderLeft: tab === item.id ? '3px solid var(--magenta-500)' : '3px solid transparent', cursor: 'pointer', color: tab === item.id ? '#fff' : 'rgba(255,255,255,0.45)', transition: 'all 180ms' }}>
                   {item.icon}
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item.label}</span>
                 </button>
               ))}
             </nav>
-
-            {/* Sign out */}
-            <button
-              onClick={signOut}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '18px 8px', background: 'transparent', border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.35)', transition: 'color 180ms', width: '100%' }}
-            >
+            <button onClick={signOut} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '18px 8px', background: 'transparent', border: 'none', borderTop: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', color: 'rgba(255,255,255,0.35)', width: '100%' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sign Out</span>
             </button>
@@ -4313,23 +4160,117 @@ function AccountPanel({ open, onClose, wishlist, onOpenWishlist }) {
 
         {/* ── MAIN CONTENT PANE ── */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {/* Guest header (close button) */}
           {!profile && (
             <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'flex-end', borderBottom: '1px solid #eee' }}>
               <button onClick={onClose} aria-label="Close" style={{ width: 44, height: 44, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: '#999', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
             </div>
           )}
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '28px 28px' }}>
-            {!profile ? (
-              <GuestPane />
-            ) : tab === 'dashboard' ? (
-              <DashboardPane />
-            ) : tab === 'orders' ? (
-              <OrdersPane />
-            ) : (
-              <InfoPane />
+          <div style={{ flex: 1, overflowY: 'auto', padding: '28px' }}>
+
+            {/* ── GUEST: create account ── */}
+            {!profile && (
+              <div>
+                <div style={{ fontFamily: 'var(--font-impact)', fontSize: 34, textTransform: 'uppercase', color: 'var(--ink-900)', marginBottom: 6 }}>Create Account</div>
+                <div style={{ fontFamily: 'var(--font-script)', fontStyle: 'italic', fontSize: 18, color: 'var(--magenta-500)', marginBottom: 20 }}>Únete a la familia</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#888', lineHeight: 1.6, marginBottom: 28 }}>Save your wishlist, track orders, and get early access to new drops.</div>
+                <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div>
+                    <label htmlFor="acct-g-name" style={labelStyle}>Full Name *</label>
+                    <input id="acct-g-name" type="text" required placeholder="Your name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label htmlFor="acct-g-email" style={labelStyle}>Email Address *</label>
+                    <input id="acct-g-email" type="email" required placeholder="your@email.com" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
+                  </div>
+                  {formStep === 'error' && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#c0392b', padding: '10px 14px', background: '#fef0ee', border: '1px solid #f5c2bb' }}>Something went wrong. Please try again.</div>}
+                  <button type="submit" disabled={formStep === 'saving'} style={{ width: '100%', padding: '18px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: 'none', boxShadow: '4px 4px 0 0 var(--magenta-500)', cursor: formStep === 'saving' ? 'wait' : 'pointer' }}>
+                    {formStep === 'saving' ? 'Creating...' : 'Create Account →'}
+                  </button>
+                </form>
+              </div>
             )}
+
+            {/* ── DASHBOARD tab ── */}
+            {profile && tab === 'dashboard' && (
+              <div>
+                <div style={{ marginBottom: 28 }}>
+                  <div style={{ fontFamily: 'var(--font-impact)', fontSize: 38, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', lineHeight: 1 }}>Hi, {profile.name.split(' ')[0]}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#999', marginTop: 6 }}>{profile.email}</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                  <div onClick={() => { onClose(); onOpenWishlist(); }} style={{ padding: '18px 16px', background: '#fafafa', border: '1px solid #eee', cursor: 'pointer' }}>
+                    <div style={{ marginBottom: 8 }}><svg width="20" height="20" viewBox="0 0 24 24" fill={wishlist.length > 0 ? 'var(--magenta-500)' : 'none'} stroke={wishlist.length > 0 ? 'var(--magenta-500)' : '#bbb'} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                    <div style={{ fontFamily: 'var(--font-impact)', fontSize: 26, color: 'var(--ink-900)' }}>{wishlist.length}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999', marginTop: 2 }}>Saved Items</div>
+                  </div>
+                  <div onClick={() => setTab('orders')} style={{ padding: '18px 16px', background: '#fafafa', border: '1px solid #eee', cursor: 'pointer' }}>
+                    <div style={{ marginBottom: 8 }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="1.5"><path d="M5 8h14M5 8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8l1 10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2L19 8"/><path d="M10 12h4"/></svg></div>
+                    <div style={{ fontFamily: 'var(--font-impact)', fontSize: 26, color: 'var(--ink-900)' }}>{orders.length}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999', marginTop: 2 }}>Orders</div>
+                  </div>
+                </div>
+                {[
+                  { label: 'View My Orders', action: () => setTab('orders') },
+                  { label: 'Edit My Info', action: () => setTab('info') },
+                  { label: 'View Saved Items', action: () => { onClose(); onOpenWishlist(); } },
+                  { label: 'Continue Shopping', action: () => { onClose(); navigate('store'); } },
+                ].map((item, i) => (
+                  <div key={i} onClick={item.action} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', borderBottom: '1px solid #eee', cursor: 'pointer' }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink-900)' }}>{item.label}</span>
+                    {chevron}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── ORDERS tab ── */}
+            {profile && tab === 'orders' && (
+              <div>
+                <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', marginBottom: 20 }}>My Orders</div>
+                {orders.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="1.2" style={{ marginBottom: 16 }}><path d="M5 8h14M5 8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2M5 8l1 10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2L19 8"/></svg>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#999', marginBottom: 20, lineHeight: 1.6 }}>No orders yet.<br/>Go find something you love.</div>
+                    <button onClick={() => { onClose(); navigate('store'); }} style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', padding: '14px 28px', background: 'var(--ink-900)', color: '#fff', border: 'none', cursor: 'pointer' }}>Shop Now</button>
+                  </div>
+                ) : orders.slice().reverse().map((o, i) => (
+                  <div key={i} style={{ padding: '16px 0', borderBottom: '1px solid #eee' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink-900)' }}>{o.ref}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#999', marginTop: 3 }}>{o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</div>
+                      </div>
+                      {o.total && <div style={{ fontFamily: 'var(--font-impact)', fontSize: 20, color: 'var(--ink-900)' }}>${o.total}</div>}
+                    </div>
+                    <div style={{ marginTop: 8, display: 'inline-block', padding: '4px 10px', background: '#f5f5f5', fontFamily: 'var(--font-body)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#666' }}>Payment Pending</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── MY INFO tab ── */}
+            {profile && tab === 'info' && (
+              <div>
+                <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)', marginBottom: 20 }}>My Info</div>
+                <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div>
+                    <label htmlFor="acct-i-name" style={labelStyle}>Full Name *</label>
+                    <input id="acct-i-name" type="text" required placeholder="Your name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label htmlFor="acct-i-email" style={labelStyle}>Email Address *</label>
+                    <input id="acct-i-email" type="email" required placeholder="your@email.com" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
+                  </div>
+                  {formStep === 'saved' && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#1a7a3f', padding: '10px 14px', background: '#f0faf4', border: '1px solid #b6e8cc' }}>✓ Profile updated successfully</div>}
+                  {formStep === 'error' && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#c0392b', padding: '10px 14px', background: '#fef0ee', border: '1px solid #f5c2bb' }}>Something went wrong. Please try again.</div>}
+                  <button type="submit" disabled={formStep === 'saving'} style={{ width: '100%', padding: '16px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', background: 'var(--ink-900)', color: '#fff', border: 'none', cursor: formStep === 'saving' ? 'wait' : 'pointer' }}>
+                    {formStep === 'saving' ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </form>
+              </div>
+            )}
+
           </div>
         </div>
       </aside>
