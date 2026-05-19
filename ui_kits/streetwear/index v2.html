@@ -1053,7 +1053,7 @@ function ProductCard({ product, onQuickView, onCardClick }) {
   const handleColorClick = (e, hex) => {
     e.stopPropagation();
     if (hex === product.swatch) return;
-    const match = PRODUCTS.find(p => p.swatch === hex && p.category === product.category);
+    const match = PRODUCTS.find(p => p.swatch === hex && (p.group ?? p.category) === (product.group ?? product.category));
     if (match) navigate('product', { product: match });
   };
   const img = product.images[hover && product.images.length > 1 ? 1 : 0];
@@ -1218,6 +1218,7 @@ const PRODUCTS = [
     id: 'bikini-black-lm-bandidas',
     name: 'LM Bandidas Bikini',
     subtitle: 'Black · signature monogram',
+    group: 'bikinis',
     price: 98,
     images: [
       'assets/lookbook-bikini-black-lm-cartagena-wide.jpg',
@@ -1252,7 +1253,7 @@ const PRODUCTS = [
     tag: 'Drop 02',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'tracksuits', gender: 'women',
+    category: 'tracksuits', gender: 'women', group: 'tracksuits-womens',
     desc: 'Cropped hooded jacket + cuffed jogger. Signature fit. The bestseller.',
   },
   {
@@ -1271,7 +1272,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    category: 'tracksuits', gender: 'men',
+    category: 'tracksuits', gender: 'men', group: 'tracksuits-mens',
     desc: 'Royal-blue bomber + jogger with all-over LM monogram. Red-and-yellow varsity trim. Statement piece.',
   },
 
@@ -1280,6 +1281,7 @@ const PRODUCTS = [
     id: 'bikini-lm-blue',
     name: 'LM Bikini · Cartagena',
     subtitle: 'Baby blue · recycled nylon',
+    group: 'bikinis',
     price: 95,
     images: [
       'assets/lookbook-bikini-beach-cartagena.png',
@@ -1301,6 +1303,7 @@ const PRODUCTS = [
     id: 'bikini-pink',
     name: 'LM Bikini · Rosa',
     subtitle: 'Pink · recycled nylon',
+    group: 'bikinis',
     price: 95,
     images: [
       'assets/lookbook-bikini-pink-front.png',
@@ -1321,6 +1324,7 @@ const PRODUCTS = [
     id: 'bikini-black-bandidas',
     name: 'LM Bikini · Bandidas',
     subtitle: 'Triangle · black monogram',
+    group: 'bikinis',
     price: 95,
     images: [
       'assets/lookbook-bikini-black-lm-rio-stairs.jpg',
@@ -1337,6 +1341,7 @@ const PRODUCTS = [
     id: 'swimsuit-onepiece',
     name: 'LM One-Piece',
     subtitle: 'Full coverage · recycled nylon',
+    group: 'swimsuits',
     price: 112,
     images: [
       'assets/mockup-swimsuit-onepiece-front.png',
@@ -1357,6 +1362,7 @@ const PRODUCTS = [
     id: 'activewear-red-tribal',
     name: 'Red Tribal Active Set',
     subtitle: 'Sports bra + leggings',
+    group: 'activewear-sets',
     price: 145,
     images: [
       'assets/lookbook-activewear-red-front.png',
@@ -1376,6 +1382,7 @@ const PRODUCTS = [
     id: 'activewear-baroque',
     name: 'Baroque Active Set',
     subtitle: 'Black × gold · sports bra + leggings',
+    group: 'activewear-sets',
     price: 155,
     images: [
       'assets/lookbook-baroque-set-front.png',
@@ -1397,6 +1404,7 @@ const PRODUCTS = [
     id: 'activewear-pink-tattoo',
     name: 'Rosa Tattoo Active Set',
     subtitle: 'Sports bra + leggings',
+    group: 'activewear-sets',
     price: 140,
     images: [
       'assets/lookbook-gym-pink-set-front.png',
@@ -1417,6 +1425,7 @@ const PRODUCTS = [
     id: 'sports-bra-red',
     name: 'LM Sports Bra · Red',
     subtitle: 'Standalone · red ornate',
+    group: 'sports-bras',
     price: 65,
     images: [
       'assets/lookbook-activewear-red-front.png',
@@ -1438,6 +1447,7 @@ const PRODUCTS = [
     id: 'sports-bra-pink',
     name: 'LM Sports Bra · Rosa',
     subtitle: 'Padded · pink',
+    group: 'sports-bras',
     price: 65,
     images: [
       'assets/mockup-sports-bra-pink-front.png',
@@ -1469,7 +1479,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'leggings', gender: 'women',
+    category: 'leggings', gender: 'women', group: 'leggings',
     desc: 'High-waist LM leggings in bold black-and-white print. 4-way stretch, squat-proof.',
   },
   {
@@ -1487,7 +1497,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'leggings', gender: 'women',
+    category: 'leggings', gender: 'women', group: 'leggings',
     desc: 'Fiery red LM leggings. High-waist, compressive, 4-way stretch.',
   },
   {
@@ -1505,7 +1515,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'leggings', gender: 'women',
+    category: 'leggings', gender: 'women', group: 'leggings',
     desc: 'Clean white LM leggings with all-over monogram. High-waist, compressive.',
   },
 
@@ -1525,7 +1535,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'joggers', gender: 'women',
+    category: 'joggers', gender: 'women', group: 'joggers-womens',
     desc: 'Cuffed LM jogger in baby blue recycled fabric. Pairs with Latina tracksuit jacket.',
   },
   {
@@ -1542,7 +1552,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'joggers', gender: 'women',
+    category: 'joggers', gender: 'women', group: 'joggers-womens',
     desc: 'Cuffed LM jogger in royal blue. All-over LM monogram. Recycled nylon.',
   },
   {
@@ -1559,7 +1569,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-selva-accent)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'joggers', gender: 'women',
+    category: 'joggers', gender: 'women', group: 'joggers-womens',
     desc: 'Selva-green jogger with all-over LM print. Recycled, cuffed.',
   },
 
@@ -1579,7 +1589,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-selva-accent)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    category: 'joggers', gender: 'men',
+    category: 'joggers', gender: 'men', group: 'joggers-mens',
     desc: 'Men\'s LM jogger in Selva green. All-over monogram print, elastic drawstring, recycled fabric.',
   },
 
@@ -1599,7 +1609,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'windbreakers', gender: 'women',
+    category: 'windbreakers', gender: 'women', group: 'windbreakers-womens',
     desc: 'Cropped LM windbreaker in baby blue. Zip front, all-over monogram, lightweight.',
   },
   {
@@ -1616,7 +1626,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'windbreakers', gender: 'women',
+    category: 'windbreakers', gender: 'women', group: 'windbreakers-womens',
     desc: 'Cropped LM windbreaker in royal blue. Zip front, all-over monogram, lightweight.',
   },
   {
@@ -1633,7 +1643,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-selva-accent)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'windbreakers', gender: 'women',
+    category: 'windbreakers', gender: 'women', group: 'windbreakers-womens',
     desc: 'Cropped LM windbreaker in Selva green. All-over monogram, zip front.',
   },
 
@@ -1653,7 +1663,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    category: 'windbreakers', gender: 'men',
+    category: 'windbreakers', gender: 'men', group: 'windbreakers-mens',
     desc: 'Men\'s LM windbreaker in baby blue. Full zip, all-over monogram, lightweight shell.',
   },
   {
@@ -1670,7 +1680,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    category: 'windbreakers', gender: 'men',
+    category: 'windbreakers', gender: 'men', group: 'windbreakers-mens',
     desc: 'Men\'s LM windbreaker in royal blue. Full zip, all-over monogram.',
   },
   {
@@ -1687,7 +1697,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-selva-accent)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    category: 'windbreakers', gender: 'men',
+    category: 'windbreakers', gender: 'men', group: 'windbreakers-mens',
     desc: 'Men\'s LM windbreaker in Selva green. Full zip, all-over monogram.',
   },
 
@@ -1707,7 +1717,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    category: 'bombers', gender: 'unisex',
+    category: 'bombers', gender: 'unisex', group: 'bombers',
     desc: 'Unisex LM bomber jacket in baby blue. All-over monogram print. Ribbed cuffs and collar.',
   },
   {
@@ -1724,7 +1734,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-selva-accent)',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    category: 'bombers', gender: 'unisex',
+    category: 'bombers', gender: 'unisex', group: 'bombers',
     desc: 'Unisex LM bomber in Selva green. All-over monogram print. Ribbed cuffs and collar.',
   },
   {
@@ -1741,7 +1751,7 @@ const PRODUCTS = [
     tag: 'Limited',
     tagBg: 'var(--cw-selva-base)',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-    category: 'bombers', gender: 'unisex',
+    category: 'bombers', gender: 'unisex', group: 'bombers',
     desc: 'Forest-green bomber with embroidered LM monogram chest patch. The premium layer.',
   },
 
@@ -1762,7 +1772,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--cw-bandidas-accent)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    category: 'tops', gender: 'women',
+    category: 'tops', gender: 'women', group: 'tops',
     desc: 'Cropped black tee with Bandidas sugar skull graphic. Red ornate print. Statement piece.',
   },
 ];
@@ -3461,7 +3471,7 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
 
   const handleColorwayClick = (hex) => {
     if (hex === product.swatch) return;
-    const match = PRODUCTS.find(p => p.swatch === hex && p.category === product.category);
+    const match = PRODUCTS.find(p => p.swatch === hex && (p.group ?? p.category) === (product.group ?? product.category));
     if (match) { navigate('product', { product: match }); setImgIdx(0); setSize(null); }
   };
 
@@ -3602,7 +3612,7 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
             <div style={{ display: 'flex', gap: 8 }}>
               {product.colorways.map((c, i) => {
                 const isActive = c === product.swatch;
-                const hasProduct = PRODUCTS.some(p => p.swatch === c && p.category === product.category);
+                const hasProduct = PRODUCTS.some(p => p.swatch === c && (p.group ?? p.category) === (product.group ?? product.category));
                 return (
                   <button
                     key={i}
