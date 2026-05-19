@@ -473,14 +473,13 @@ function CountdownBanner() {
    ============================================================ */
 function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore }) {
   const { str, lang, setLang, navigate } = useContext(LangContext);
-  const personas = ['Women', 'Men', 'Unisex', 'Sport', 'LM Luxe'];
-  const personaLabels = { Women: str.women, Men: str.men, Unisex: str.unisex, Sport: str.sport, 'LM Luxe': 'LM Luxe' };
+  const personas = ['Women', 'Men', 'Unisex', 'Sport'];
+  const personaLabels = { Women: str.women, Men: str.men, Unisex: str.unisex, Sport: str.sport };
   const mega = {
-    'Women':   ['New', 'Tracksuits', 'Bikinis', 'Activewear', 'Tops', 'Joggers', 'Accessories', 'Sale'],
-    'Men':     ['New', 'Tracksuits', 'Tees', 'Bombers', 'Joggers', 'Shorts', 'Accessories', 'Sale'],
-    'Unisex':  ['New', 'Tees', 'Bombers', 'Hoodies', 'Accessories', 'Sale'],
-    'Sport':   ['New', 'Sports bras', 'Leggings', 'Sets', 'Shorts', 'Sale'],
-    'LM Luxe': ['Edition 01', 'Bombers', 'Silk', 'Handcrafted'],
+    'Women':  ['New', 'Tracksuits', 'Bikinis', 'Activewear', 'Tops', 'Joggers', 'Accessories', 'Sale'],
+    'Men':    ['New', 'Tracksuits', 'Tees', 'Bombers', 'Joggers', 'Shorts', 'Accessories', 'Sale'],
+    'Unisex': ['New', 'Tees', 'Bombers', 'Hoodies', 'Accessories', 'Sale'],
+    'Sport':  ['New', 'Sports bras', 'Leggings', 'Sets', 'Shorts', 'Sale'],
   };
 
   return (
@@ -512,7 +511,6 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore 
             alignItems: 'center',
             gap: 6,
           }}>
-            {p === 'LM Luxe' && <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--magenta-500)' }} />}
             {personaLabels[p] || p}
           </a>
         ))}
@@ -964,7 +962,7 @@ function ShopByCategory() {
   const { str, navigate } = useContext(LangContext);
   const catNav = {
     Tracksuits: 'Tracksuits', Bikinis: 'Bikinis', Active: 'Activewear',
-    Bombers: 'Bombers', Tops: 'Tops', Joggers: 'Joggers', 'LM Luxe': null,
+    Bombers: 'Bombers', Tops: 'Tops', Joggers: 'Joggers',
   };
   const cats = [
     { name: 'Tracksuits', bg: '#87C2DD', img: '../../assets/lookbook-stairs-latina-tracksuit.png',         fit: 'cover' },
@@ -973,7 +971,6 @@ function ShopByCategory() {
     { name: 'Bombers',    bg: '#1A3B8E', img: '../../assets/lookbook-mens-bandera-tracksuit-front.png',    fit: 'cover' },
     { name: 'Tops',       bg: '#BC1F2D', img: '../../assets/lookbook-sports-bra-red-wall.png',             fit: 'cover' },
     { name: 'Joggers',    bg: '#1A3B8E', img: '../../assets/lookbook-mens-bandera-tracksuit-down.png',     fit: 'cover' },
-    { name: 'LM Luxe',    bg: '#0a0a0a', img: '../../assets/logo-lm-monogram-male.png',                    fit: 'contain', luxe: true },
   ];
   return (
     <section className="lm-cats-section" style={{ background: 'var(--paper)', padding: '64px 32px 96px' }}>
@@ -1000,7 +997,7 @@ function ShopByCategory() {
             textUnderlineOffset: 4,
           }}>{str.viewAll}</a>
         </div>
-        <div className="lm-cats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+        <div className="lm-cats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
           {cats.map(c => (
             <a key={c.name} onClick={() => catNav[c.name] && navigate('store', { category: catNav[c.name] })} style={{ cursor: 'pointer', display: 'block' }}>
               <div style={{
@@ -1012,7 +1009,7 @@ function ShopByCategory() {
                 backgroundRepeat: 'no-repeat',
                 position: 'relative',
                 overflow: 'hidden',
-                filter: c.luxe ? 'drop-shadow(0 12px 24px rgba(233,30,151,0.4))' : 'none',
+                filter: 'none',
                 transition: 'transform 320ms var(--ease-out)',
               }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; }}
@@ -2744,7 +2741,6 @@ function Footer({ onNavigate }) {
       { label: str.men,    page: 'store-men' },
       { label: str.unisex, page: 'store' },
       { label: str.sport,  page: 'store-activewear' },
-      { label: 'LM Luxe',  page: 'store' },
     ]},
     { title: str.theHouse, items: [
       { label: str.lookbookLink },
