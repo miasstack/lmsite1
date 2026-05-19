@@ -1149,14 +1149,15 @@ function ProductCard({ product, onQuickView, onCardClick }) {
 }
 
 /* ============================================================
-   SHOPIFY CONFIG — fill in your store credentials to activate checkout
-   Leave SHOP_DOMAIN blank to keep local cart (no real checkout)
+   SHOP CONFIG — Printful + Vercel checkout (live)
+   PAYPAL_ME: your PayPal.me username (e.g. 'latinomagic') — fill in below
+   SHOP_DOMAIN: fill in later if adding Shopify
    ============================================================ */
 const SHOP_CONFIG = {
-  SHOP_DOMAIN: '',           // e.g. 'latinomagic.myshopify.com'
-  STOREFRONT_TOKEN: '',      // Storefront API public access token
-  // Map product id → Shopify variant GID (fill after creating products in Shopify)
-  // e.g. 'bikini-black-lm-bandidas': 'gid://shopify/ProductVariant/12345678'
+  PAYPAL_ME: '',             // e.g. 'latinomagic' → paypal.me/latinomagic
+  SHOP_DOMAIN: '',           // Shopify domain (optional, for future)
+  STOREFRONT_TOKEN: '',      // Shopify storefront token (optional)
+  CHECKOUT_API: '/api/checkout',  // Vercel serverless function (live on this domain)
   variantMap: {},
 };
 
@@ -2224,62 +2225,125 @@ function AppPromo() {
 }
 
 /* ============================================================
-   WAITLIST BUTTON — collects interest via mailto when Shopify not live
+   CHECKOUT BUTTON — POSTs to /api/checkout → Printful draft + PayPal
    ============================================================ */
-function WaitlistButton({ product, size }) {
-  const [sent, setSent] = React.useState(false);
-  const [email, setEmail] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+function CheckoutButton({ product, size }) {
+  const [step, setStep] = React.useState('idle'); // idle | form | loading | done | error
+  const [form, setForm] = React.useState({ name: '', email: '', address1: '', city: '', state: '', zip: '' });
+  const [result, setResult] = React.useState(null);
 
-  function submit(e) {
+  const btnStyle = (active) => ({
+    width: '100%', padding: '18px 24px',
+    fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13,
+    letterSpacing: '0.12em', textTransform: 'uppercase',
+    background: active ? 'var(--ink-900)' : 'var(--ink-200)',
+    color: active ? '#fff' : 'var(--ink-400)',
+    border: '2px solid ' + (active ? 'var(--ink-900)' : 'var(--ink-200)'),
+    boxShadow: active ? '4px 4px 0 0 var(--magenta-500)' : 'none',
+    cursor: active ? 'pointer' : 'not-allowed',
+    transition: 'all 220ms var(--ease-out)',
+  });
+
+  async function submit(e) {
     e.preventDefault();
-    if (!email) return;
-    const subject = encodeURIComponent(`Order Interest: ${product.name}${size ? ' — Size ' + size : ''}`);
-    const body = encodeURIComponent(
-      `Hi Latino Magic,\n\nI want to order:\n• ${product.name}\n• Size: ${size || 'TBD'}\n• Price: $${product.price}\n\nPlease notify me when this product is available to purchase.\n\nEmail: ${email}`
-    );
-    window.open(`mailto:orders@latinomagic.com?subject=${subject}&body=${body}`);
-    setSent(true);
-    setOpen(false);
+    setStep('loading');
+    try {
+      const res = await fetch(SHOP_CONFIG.CHECKOUT_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          productName: product.name,
+          price: product.price,
+          size,
+          customerName: form.name,
+          customerEmail: form.email,
+          customerAddress: { address1: form.address1, city: form.city, state: form.state, zip: form.zip, country: 'US' },
+        }),
+      });
+      const data = await res.json();
+      setResult(data);
+      setStep('done');
+    } catch (err) {
+      setStep('error');
+    }
   }
 
-  if (sent) return (
-    <div style={{ marginTop: 24, padding: '16px 20px', background: 'var(--magenta-50)', border: '1.5px solid var(--magenta-300)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--magenta-800)', textAlign: 'center' }}>
-      ✓ Request sent! We'll confirm your order within 24 hours.
+  if (step === 'done' && result) return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ padding: '18px 20px', background: '#f0fdf4', border: '1.5px solid #86efac', fontFamily: 'var(--font-body)', fontSize: 13, color: '#166534', marginBottom: 12 }}>
+        <strong>✓ Order received!</strong> Ref: <code>{result.ref}</code>
+        {result.printfulOrderId && <span> · Printful draft #{result.printfulOrderId} created</span>}
+      </div>
+      <a
+        href={result.paymentUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ display: 'block', width: '100%', padding: '16px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: '#0070ba', color: '#fff', border: 'none', cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}
+      >
+        Pay ${product.price} via PayPal →
+      </a>
+      <p style={{ margin: '8px 0 0', fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--fg-3)', textAlign: 'center' }}>
+        After payment, your order ships via Printful within 3–5 business days.
+      </p>
     </div>
   );
 
+  if (step === 'error') return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ padding: '16px', background: '#fef2f2', border: '1.5px solid #fca5a5', fontFamily: 'var(--font-body)', fontSize: 13, color: '#991b1b', marginBottom: 10 }}>
+        Something went wrong. Email us at orders@latinomagic.com
+      </div>
+      <button onClick={() => setStep('idle')} style={{ ...btnStyle(true) }}>Try Again</button>
+    </div>
+  );
+
+  if (step === 'loading') return (
+    <div style={{ marginTop: 24, padding: '20px', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-2)', border: '1.5px solid var(--line)' }}>
+      Processing your order...
+    </div>
+  );
+
+  if (step === 'form') return (
+    <form onSubmit={submit} style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-2)', lineHeight: 1.5, fontWeight: 700 }}>
+        {product.name} · Size {size} · ${product.price}
+      </p>
+      {[
+        { key: 'name', label: 'Full Name', placeholder: 'Maria Rodriguez', type: 'text' },
+        { key: 'email', label: 'Email', placeholder: 'you@email.com', type: 'email' },
+        { key: 'address1', label: 'Street Address', placeholder: '123 Main St', type: 'text' },
+        { key: 'city', label: 'City', placeholder: 'Miami', type: 'text' },
+        { key: 'state', label: 'State', placeholder: 'FL', type: 'text' },
+        { key: 'zip', label: 'ZIP Code', placeholder: '33101', type: 'text' },
+      ].map(f => (
+        <div key={f.key} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <label style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--fg-3)' }}>{f.label}</label>
+          <input
+            type={f.type}
+            required
+            placeholder={f.placeholder}
+            value={form[f.key]}
+            onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+            style={{ padding: '10px 12px', fontFamily: 'var(--font-body)', fontSize: 14, border: '1.5px solid var(--ink-300)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+          />
+        </div>
+      ))}
+      <button type="submit" style={{ ...btnStyle(true), marginTop: 4 }}>
+        Place Order — Pay ${product.price} via PayPal →
+      </button>
+      <button type="button" onClick={() => setStep('idle')} style={{ background: 'none', border: 'none', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-3)', cursor: 'pointer', textDecoration: 'underline' }}>Cancel</button>
+    </form>
+  );
+
+  // idle state
   return (
     <div style={{ marginTop: 24 }}>
-      {!open ? (
-        <button
-          disabled={!size}
-          onClick={() => size && setOpen(true)}
-          style={{ width: '100%', padding: '18px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: size ? 'var(--ink-900)' : 'var(--ink-200)', color: size ? '#fff' : 'var(--ink-400)', border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-200)'), boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none', cursor: size ? 'pointer' : 'not-allowed', transition: 'all 220ms var(--ease-out)' }}
-        >
-          {size ? 'Reserve This Item →' : 'Pick a size'}
-        </button>
-      ) : (
-        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-2)', lineHeight: 1.5 }}>
-            Drop your email — we'll confirm your <strong>{product.name}</strong> (Size {size}) within 24 hrs.
-          </p>
-          <input
-            type="email"
-            required
-            placeholder="your@email.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={{ padding: '12px 14px', fontFamily: 'var(--font-body)', fontSize: 14, border: '1.5px solid var(--ink-300)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
-          />
-          <button type="submit" style={{ padding: '14px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--magenta-500)', color: '#fff', border: '2px solid var(--magenta-500)', cursor: 'pointer' }}>
-            Reserve Now →
-          </button>
-          <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-3)', cursor: 'pointer', textDecoration: 'underline' }}>Cancel</button>
-        </form>
-      )}
+      <button disabled={!size} onClick={() => size && setStep('form')} style={btnStyle(!!size)}>
+        {size ? 'Buy Now — Pay via PayPal →' : 'Pick a size first'}
+      </button>
       <p style={{ marginTop: 8, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-        Ships via Printful · Printed on demand
+        Fulfilled by Printful · Ships in 3–5 days · 14-day returns
       </p>
     </div>
   );
@@ -3229,11 +3293,11 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
                 {size ? '🛍 Buy Now — Secure Checkout' : str.pickSize}
               </button>
               <p style={{ marginTop: 6, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                Secured by Shopify · Ships via Printful
+                Secure checkout · Ships via Printful
               </p>
             </>
           ) : (
-            <WaitlistButton product={product} size={size} />
+            <CheckoutButton product={product} size={size} />
           )}
 
           {/* Trust signals */}
