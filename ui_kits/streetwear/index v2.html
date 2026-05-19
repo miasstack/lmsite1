@@ -408,7 +408,7 @@ const TRANSLATIONS = {
   },
 };
 
-const LangContext = createContext({ str: TRANSLATIONS.en, lang: 'en', setLang: () => {}, navigate: () => {}, wishlist: [], toggleWishlist: () => {}, setWishlistOpen: () => {} });
+const LangContext = createContext({ str: TRANSLATIONS.en, lang: 'en', setLang: () => {}, navigate: () => {}, wishlist: [], toggleWishlist: () => {}, setWishlistOpen: () => {}, setAccountOpen: () => {} });
 
 /* ============================================================
    COUNTDOWN BANNER
@@ -476,7 +476,7 @@ function CountdownBanner() {
    HEADER V2
    ============================================================ */
 function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore }) {
-  const { str, lang, setLang, navigate, wishlist, setWishlistOpen } = useContext(LangContext);
+  const { str, lang, setLang, navigate, wishlist, setWishlistOpen, setAccountOpen } = useContext(LangContext);
   const personas = ['Women', 'Men', 'Unisex', 'Sport'];
   const personaLabels = { Women: str.women, Men: str.men, Unisex: str.unisex, Sport: str.sport };
   const mega = {
@@ -581,10 +581,10 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore 
             <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlist.length > 0 ? 'var(--magenta-500)' : 'none'} stroke={wishlist.length > 0 ? 'var(--magenta-500)' : 'currentColor'} strokeWidth="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             <span>{str.wishlist}{wishlist.length > 0 ? ` (${wishlist.length})` : ''}</span>
           </button>
-          <a style={utilLink} aria-label={str.account} role="button" onClick={() => setWishlistOpen(true)}>
+          <button onClick={() => setAccountOpen(true)} style={{ ...utilLink, background: 'transparent', border: 'none', padding: 0 }} aria-label={str.account}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
             <span>{str.account}</span>
-          </a>
+          </button>
           <button
             onClick={() => setLang(lang === 'en' ? 'es' : 'en')}
             aria-label={lang === 'en' ? 'Switch to Spanish' : 'Cambiar a inglés'}
@@ -2748,6 +2748,14 @@ function CartDrawer({ open, items, onClose, onRemove }) {
       const data = await res.json();
       setResult(data);
       setCheckStep('done');
+      // Persist order ref to localStorage for account history
+      if (data.ref) {
+        try {
+          const prev = JSON.parse(localStorage.getItem('lm_orders') || '[]');
+          prev.push({ ref: data.ref, total: subtotal, date: new Date().toISOString() });
+          localStorage.setItem('lm_orders', JSON.stringify(prev));
+        } catch {}
+      }
     } catch (err) {
       setCheckStep('error');
     }
@@ -4054,6 +4062,236 @@ function LegalPage({ pageKey, onNavigate }) {
    APP V2 — ROOT
    ============================================================ */
 /* ============================================================
+   ACCOUNT PANEL
+   ============================================================ */
+function AccountPanel({ open, onClose, wishlist, onOpenWishlist }) {
+  const { str, navigate } = useContext(LangContext);
+
+  const [profile, setProfile] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem('lm_account') || 'null'); } catch { return null; }
+  });
+  const [form, setForm] = React.useState({ name: '', email: '' });
+  const [formStep, setFormStep] = React.useState('idle'); // idle | saving | saved | error
+  const [orders, setOrders] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem('lm_orders') || '[]'); } catch { return []; }
+  });
+
+  // Reset form when panel opens
+  React.useEffect(() => {
+    if (open) {
+      setForm({ name: profile ? profile.name : '', email: profile ? profile.email : '' });
+      setFormStep('idle');
+      // Refresh orders from localStorage
+      try { setOrders(JSON.parse(localStorage.getItem('lm_orders') || '[]')); } catch {}
+    }
+  }, [open]);
+
+  function saveProfile(e) {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim()) return;
+    setFormStep('saving');
+    const p = { name: form.name.trim(), email: form.email.trim(), since: new Date().toISOString() };
+    try {
+      localStorage.setItem('lm_account', JSON.stringify(p));
+      setProfile(p);
+      setFormStep('saved');
+    } catch { setFormStep('error'); }
+  }
+
+  function signOut() {
+    localStorage.removeItem('lm_account');
+    setProfile(null);
+    setForm({ name: '', email: '' });
+    setFormStep('idle');
+  }
+
+  const inputStyle = {
+    width: '100%',
+    border: '1.5px solid var(--ink-300)',
+    padding: '12px 14px',
+    fontFamily: 'var(--font-body)',
+    fontSize: 13,
+    color: 'var(--ink-900)',
+    background: 'transparent',
+    outline: 'none',
+    boxSizing: 'border-box',
+  };
+  const labelStyle = {
+    fontFamily: 'var(--font-body)',
+    fontSize: 11,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.1em',
+    color: 'var(--ink-600)',
+    display: 'block',
+    marginBottom: 6,
+  };
+
+  return (
+    <>
+      {open && (
+        <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 90, animation: 'lmFadeIn 220ms var(--ease-out)' }} />
+      )}
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Account"
+        style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: 420, maxWidth: '100vw', background: 'var(--paper)', zIndex: 91, transform: open ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 320ms var(--ease-out)', display: 'flex', flexDirection: 'column', borderLeft: '1px solid var(--line)' }}
+      >
+        {/* Header */}
+        <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--line)' }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)' }}>
+              {profile ? `Hola, ${profile.name.split(' ')[0]}` : str.account}
+            </div>
+            {profile && (
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>{profile.email}</div>
+            )}
+          </div>
+          <button onClick={onClose} aria-label="Close account" style={{ width: 44, height: 44, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--ink-700)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+
+          {!profile ? (
+            /* ── GUEST: Create Account Form ── */
+            <div>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontFamily: 'var(--font-script)', fontStyle: 'italic', fontSize: 20, color: 'var(--magenta-500)', marginBottom: 8 }}>Únete a la familia</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.6 }}>
+                  Create a free account to save your wishlist, track orders, and get early access to drops.
+                </div>
+              </div>
+
+              <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <div>
+                  <label htmlFor="acct-name" style={labelStyle}>Full Name *</label>
+                  <input
+                    id="acct-name"
+                    type="text"
+                    required
+                    placeholder="Your name"
+                    value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="acct-email" style={labelStyle}>Email Address *</label>
+                  <input
+                    id="acct-email"
+                    type="email"
+                    required
+                    placeholder="your@email.com"
+                    value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    style={inputStyle}
+                  />
+                </div>
+
+                {formStep === 'error' && (
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#c0392b', padding: '10px 14px', border: '1px solid #c0392b', background: '#fef0ee' }}>
+                    Something went wrong. Please try again.
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={formStep === 'saving'}
+                  style={{ width: '100%', padding: '16px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: '2px solid var(--ink-900)', boxShadow: '4px 4px 0 0 var(--magenta-500)', cursor: formStep === 'saving' ? 'wait' : 'pointer', transition: 'all 220ms var(--ease-out)', marginTop: 4 }}
+                >
+                  {formStep === 'saving' ? 'Saving...' : 'Create Account →'}
+                </button>
+              </form>
+
+              <div style={{ marginTop: 32, padding: '20px', border: '1px solid var(--line)', background: '#fff' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink-500)', marginBottom: 12 }}>Already have an account?</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.5 }}>
+                  Enter your email and name above — your wishlist and order history will sync automatically.
+                </div>
+              </div>
+            </div>
+
+          ) : (
+            /* ── SIGNED IN: Profile + Stats ── */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+              {/* Wishlist card */}
+              <div
+                onClick={() => { onClose(); onOpenWishlist(); }}
+                style={{ padding: '20px', border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', transition: 'border-color 180ms' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 44, height: 44, background: wishlist.length > 0 ? 'var(--magenta-50, #fdf0f6)' : 'var(--paper)', border: '1.5px solid ' + (wishlist.length > 0 ? 'var(--magenta-400)' : 'var(--line)'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill={wishlist.length > 0 ? 'var(--magenta-500)' : 'none'} stroke={wishlist.length > 0 ? 'var(--magenta-500)' : 'var(--ink-400)'} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--ink-900)' }}>Saved Items</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-3)', marginTop: 2 }}>{wishlist.length} {wishlist.length === 1 ? 'item' : 'items'} saved</div>
+                  </div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-400)" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+
+              {/* Orders section */}
+              <div style={{ padding: '20px', border: '1px solid var(--line)', background: '#fff' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink-500)', marginBottom: 14 }}>Recent Orders</div>
+                {orders.length === 0 ? (
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.5 }}>No orders yet. Go find something you love.</div>
+                    <button onClick={() => { onClose(); navigate('store'); }} style={{ marginTop: 14, fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', padding: '10px 18px', background: 'transparent', color: 'var(--ink-900)', border: '1.5px solid var(--ink-900)', cursor: 'pointer' }}>Shop Now →</button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {orders.slice(-5).reverse().map((o, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < Math.min(orders.length, 5) - 1 ? '1px solid var(--line)' : 'none' }}>
+                        <div>
+                          <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, color: 'var(--ink-900)', letterSpacing: '0.05em' }}>{o.ref}</div>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>{o.date ? new Date(o.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</div>
+                        </div>
+                        {o.total && <div style={{ fontFamily: 'var(--font-impact)', fontSize: 16, color: 'var(--ink-900)' }}>${o.total}</div>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Edit profile */}
+              <div style={{ padding: '20px', border: '1px solid var(--line)', background: '#fff' }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink-500)', marginBottom: 14 }}>Profile</div>
+                <form onSubmit={e => { e.preventDefault(); saveProfile(e); }} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div>
+                    <label htmlFor="acct-edit-name" style={labelStyle}>Full Name</label>
+                    <input id="acct-edit-name" type="text" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label htmlFor="acct-edit-email" style={labelStyle}>Email</label>
+                    <input id="acct-edit-email" type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} style={inputStyle} />
+                  </div>
+                  {formStep === 'saved' && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#1a7a3f' }}>✓ Profile updated</div>}
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <button type="submit" style={{ flex: 1, padding: '12px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.1em', background: 'var(--ink-900)', color: '#fff', border: '1.5px solid var(--ink-900)', cursor: 'pointer' }}>Save Changes</button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Sign out */}
+              <button
+                onClick={signOut}
+                style={{ width: '100%', padding: '14px', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.1em', background: 'transparent', color: 'var(--ink-400)', border: '1px solid var(--line)', cursor: 'pointer', marginTop: 4 }}
+              >
+                Sign Out
+              </button>
+
+            </div>
+          )}
+        </div>
+      </aside>
+    </>
+  );
+}
+
+/* ============================================================
    WISHLIST PANEL
    ============================================================ */
 function WishlistPanel({ open, wishlist, onClose, toggleWishlist }) {
@@ -4144,6 +4382,7 @@ function AppV2() {
     try { return JSON.parse(localStorage.getItem('lm_wishlist') || '[]'); } catch { return []; }
   });
   const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const toggleWishlist = (productId) => {
     setWishlist(prev => {
       const next = prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId];
@@ -4161,7 +4400,7 @@ function AppV2() {
   const isLegalPage = page.startsWith('legal-') || page === 'setup';
 
   return (
-    <LangContext.Provider value={{ str, lang, setLang, navigate, wishlist, toggleWishlist, wishlistOpen, setWishlistOpen }}>
+    <LangContext.Provider value={{ str, lang, setLang, navigate, wishlist, toggleWishlist, wishlistOpen, setWishlistOpen, accountOpen, setAccountOpen }}>
       <div className="lm-base" style={{ background: isLegalPage ? '#fff' : 'var(--paper)', color: 'var(--ink-900)', minHeight: '100vh' }}>
         <a href="#main-content" className="lm-skip">Skip to content</a>
 
@@ -4234,6 +4473,7 @@ function AppV2() {
         <QuickView product={quickView} onClose={() => setQuickView(null)} onAdd={addToCart} />
         <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onRemove={removeFromCart} />
         <WishlistPanel open={wishlistOpen} wishlist={wishlist} onClose={() => setWishlistOpen(false)} toggleWishlist={toggleWishlist} />
+        <AccountPanel open={accountOpen} onClose={() => setAccountOpen(false)} wishlist={wishlist} onOpenWishlist={() => setWishlistOpen(true)} />
       </div>
     </LangContext.Provider>
   );
