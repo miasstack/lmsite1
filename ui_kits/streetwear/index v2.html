@@ -2224,6 +2224,68 @@ function AppPromo() {
 }
 
 /* ============================================================
+   WAITLIST BUTTON — collects interest via mailto when Shopify not live
+   ============================================================ */
+function WaitlistButton({ product, size }) {
+  const [sent, setSent] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+
+  function submit(e) {
+    e.preventDefault();
+    if (!email) return;
+    const subject = encodeURIComponent(`Order Interest: ${product.name}${size ? ' — Size ' + size : ''}`);
+    const body = encodeURIComponent(
+      `Hi Latino Magic,\n\nI want to order:\n• ${product.name}\n• Size: ${size || 'TBD'}\n• Price: $${product.price}\n\nPlease notify me when this product is available to purchase.\n\nEmail: ${email}`
+    );
+    window.open(`mailto:orders@latinomagic.com?subject=${subject}&body=${body}`);
+    setSent(true);
+    setOpen(false);
+  }
+
+  if (sent) return (
+    <div style={{ marginTop: 24, padding: '16px 20px', background: 'var(--magenta-50)', border: '1.5px solid var(--magenta-300)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--magenta-800)', textAlign: 'center' }}>
+      ✓ Request sent! We'll confirm your order within 24 hours.
+    </div>
+  );
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      {!open ? (
+        <button
+          disabled={!size}
+          onClick={() => size && setOpen(true)}
+          style={{ width: '100%', padding: '18px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: size ? 'var(--ink-900)' : 'var(--ink-200)', color: size ? '#fff' : 'var(--ink-400)', border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-200)'), boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none', cursor: size ? 'pointer' : 'not-allowed', transition: 'all 220ms var(--ease-out)' }}
+        >
+          {size ? 'Reserve This Item →' : 'Pick a size'}
+        </button>
+      ) : (
+        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-2)', lineHeight: 1.5 }}>
+            Drop your email — we'll confirm your <strong>{product.name}</strong> (Size {size}) within 24 hrs.
+          </p>
+          <input
+            type="email"
+            required
+            placeholder="your@email.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={{ padding: '12px 14px', fontFamily: 'var(--font-body)', fontSize: 14, border: '1.5px solid var(--ink-300)', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+          />
+          <button type="submit" style={{ padding: '14px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--magenta-500)', color: '#fff', border: '2px solid var(--magenta-500)', cursor: 'pointer' }}>
+            Reserve Now →
+          </button>
+          <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-3)', cursor: 'pointer', textDecoration: 'underline' }}>Cancel</button>
+        </form>
+      )}
+      <p style={{ marginTop: 8, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        Ships via Printful · Printed on demand
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================
    QUICK VIEW MODAL
    ============================================================ */
 function QuickView({ product, onClose, onAdd }) {
@@ -2359,7 +2421,15 @@ function QuickView({ product, onClose, onAdd }) {
             <button
               onClick={() => {
                 if (!size) return;
-                shopifyCheckout(product, size, () => { onAdd({ ...product, size }); onClose(); });
+                if (SHOP_CONFIG.SHOP_DOMAIN) {
+                  shopifyCheckout(product, size, () => { onAdd({ ...product, size }); onClose(); });
+                } else {
+                  // No Shopify yet — open mailto order request
+                  const subject = encodeURIComponent(`Order: ${product.name} — Size ${size}`);
+                  const body = encodeURIComponent(`Hi,\n\nI'd like to order:\n• ${product.name}\n• Size: ${size}\n• $${product.price}\n\nPlease confirm availability.`);
+                  window.open(`mailto:orders@latinomagic.com?subject=${subject}&body=${body}`);
+                  onClose();
+                }
               }}
               disabled={!size}
               style={{
@@ -2370,13 +2440,13 @@ function QuickView({ product, onClose, onAdd }) {
                 fontSize: 13,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                background: size ? 'var(--ink-900)' : 'var(--ink-300)',
+                background: size ? (SHOP_CONFIG.SHOP_DOMAIN ? 'var(--magenta-500)' : 'var(--ink-900)') : 'var(--ink-300)',
                 color: '#fff',
-                border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-300)'),
+                border: '2px solid ' + (size ? (SHOP_CONFIG.SHOP_DOMAIN ? 'var(--magenta-500)' : 'var(--ink-900)') : 'var(--ink-300)'),
                 boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none',
                 cursor: size ? 'pointer' : 'not-allowed',
               }}>
-              {size ? (SHOP_CONFIG.SHOP_DOMAIN ? str.buyNow || 'Buy Now →' : str.addToBag) : str.pickSize}
+              {size ? (SHOP_CONFIG.SHOP_DOMAIN ? 'Buy Now →' : 'Reserve This Item →') : str.pickSize}
             </button>
           </div>
 
@@ -3148,40 +3218,22 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
             </div>
           </div>
 
-          {/* Add to bag / Shopify checkout */}
-          <button
-            disabled={!size}
-            onClick={() => {
-              if (!size) return;
-              shopifyCheckout(product, size, () => {
-                if (typeof onAdd === 'function') onAdd(product, size);
-              });
-            }}
-            style={{
-              width: '100%',
-              marginTop: 24,
-              padding: '18px 24px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 800,
-              fontSize: 13,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              background: size ? 'var(--ink-900)' : 'var(--ink-200)',
-              color: size ? '#fff' : 'var(--ink-400)',
-              border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-200)'),
-              boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none',
-              cursor: size ? 'pointer' : 'not-allowed',
-              transition: 'all 220ms var(--ease-out)',
-            }}
-          >
-            {size
-              ? (SHOP_CONFIG.SHOP_DOMAIN ? str.buyNow || 'Buy Now' : str.addToBag)
-              : str.pickSize}
-          </button>
-          {SHOP_CONFIG.SHOP_DOMAIN && (
-            <p style={{ marginTop: 8, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              Secure checkout via Shopify
-            </p>
+          {/* Add to bag / Shopify checkout / Waitlist */}
+          {SHOP_CONFIG.SHOP_DOMAIN ? (
+            <>
+              <button
+                disabled={!size}
+                onClick={() => { if (!size) return; shopifyCheckout(product, size, () => { if (typeof onAdd === 'function') onAdd(product, size); }); }}
+                style={{ width: '100%', marginTop: 24, padding: '18px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: size ? 'var(--magenta-500)' : 'var(--ink-200)', color: '#fff', border: '2px solid ' + (size ? 'var(--magenta-500)' : 'var(--ink-200)'), boxShadow: size ? '4px 4px 0 0 var(--ink-900)' : 'none', cursor: size ? 'pointer' : 'not-allowed', transition: 'all 220ms var(--ease-out)' }}
+              >
+                {size ? '🛍 Buy Now — Secure Checkout' : str.pickSize}
+              </button>
+              <p style={{ marginTop: 6, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                Secured by Shopify · Ships via Printful
+              </p>
+            </>
+          ) : (
+            <WaitlistButton product={product} size={size} />
           )}
 
           {/* Trust signals */}
@@ -3201,6 +3253,98 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
             )}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   SETUP GUIDE PAGE — owner-only, linked from footer
+   ============================================================ */
+function SetupGuidePage({ onNavigate }) {
+  const steps = [
+    {
+      num: '01',
+      title: 'Create a Shopify Store',
+      status: !SHOP_CONFIG.SHOP_DOMAIN ? 'todo' : 'done',
+      body: 'Go to shopify.com → Start free trial → Pick "Latino Magic" as store name. Monthly plan ~$39. Once created, your store URL will be something like latinomagic.myshopify.com.',
+      link: 'https://www.shopify.com/free-trial',
+      linkLabel: 'Start Shopify Free Trial →',
+    },
+    {
+      num: '02',
+      title: 'Connect Printful to Shopify',
+      status: 'todo',
+      body: 'In Printful dashboard → My Stores → Connect → Choose Shopify → enter your store URL → authorize. Printful will auto-sync to your Shopify product catalog. All orders placed on your site will be printed and shipped by Printful automatically.',
+      link: 'https://www.printful.com/dashboard/store',
+      linkLabel: 'Open Printful Dashboard →',
+    },
+    {
+      num: '03',
+      title: 'Create Products in Shopify (via Printful)',
+      status: 'todo',
+      body: 'In Printful → Product Catalog → find each item (bikini, tracksuit, leggings, etc.) → add your design → Push to Store. This creates the product in Shopify with real variant IDs and prices. Your product photos are already on this site — they don\'t need to match Printful\'s mockups exactly.',
+      link: 'https://www.printful.com/dashboard/product-catalog',
+      linkLabel: 'Open Printful Catalog →',
+    },
+    {
+      num: '04',
+      title: 'Get Your Shopify Storefront Token',
+      status: 'todo',
+      body: 'In Shopify Admin → Apps → Develop Apps → Create App → give it a name → under "API credentials" → Storefront API Access Scopes → enable read_products, write_checkouts → Install App → copy the Storefront Access Token (starts with a long string).',
+      link: 'https://help.shopify.com/en/manual/apps/app-types/custom-apps',
+      linkLabel: 'Shopify Custom Apps Guide →',
+    },
+    {
+      num: '05',
+      title: 'Activate Checkout on This Site',
+      status: 'todo',
+      body: 'Open the site HTML file (lmsite1/ui_kits/streetwear/index v2.html) and find the SHOP_CONFIG block at the top of the script. Fill in:\n• SHOP_DOMAIN: "yourstore.myshopify.com"\n• STOREFRONT_TOKEN: "your-token-here"\n\nSave and push to GitHub — Vercel deploys automatically. Every "Reserve This Item" button becomes a live Shopify checkout.',
+    },
+  ];
+
+  return (
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: '60px 32px 120px' }}>
+      <button onClick={() => onNavigate('home')} style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-500)', background: 'transparent', border: 'none', cursor: 'pointer', marginBottom: 40, padding: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to store
+      </button>
+
+      <h1 style={{ fontFamily: 'var(--font-impact)', fontSize: 48, letterSpacing: '-0.02em', textTransform: 'uppercase', color: 'var(--ink-900)', margin: '0 0 8px' }}>Store Setup</h1>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'var(--fg-2)', margin: '0 0 48px', lineHeight: 1.6 }}>
+        Complete these 5 steps to activate real checkout on your site. Once done, every "Reserve This Item" button routes customers directly to Shopify → Printful fulfills automatically.
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {steps.map((s, i) => (
+          <div key={i} style={{ padding: '28px 32px', background: s.status === 'done' ? '#f0fdf4' : 'var(--white)', border: '1px solid ' + (s.status === 'done' ? '#86efac' : 'var(--line)'), position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+              <div style={{ fontFamily: 'var(--font-impact)', fontSize: 36, lineHeight: 1, color: s.status === 'done' ? '#16a34a' : 'var(--ink-200)', minWidth: 48 }}>{s.num}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <h3 style={{ margin: 0, fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 16, color: 'var(--ink-900)' }}>{s.title}</h3>
+                  {s.status === 'done' && <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#16a34a', background: '#dcfce7', padding: '3px 8px' }}>✓ Done</span>}
+                  {s.status === 'todo' && <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--ink-500)', background: 'var(--ink-100)', padding: '3px 8px' }}>Pending</span>}
+                </div>
+                <p style={{ margin: '0 0 12px', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.65, whiteSpace: 'pre-line' }}>{s.body}</p>
+                {s.link && (
+                  <a href={s.link} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--magenta-500)', textDecoration: 'none', borderBottom: '1px solid var(--magenta-300)', paddingBottom: 2 }}>
+                    {s.linkLabel}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 40, padding: '24px 28px', background: 'var(--ink-900)', color: '#fff' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 8 }}>Current Status</div>
+        <p style={{ margin: 0, fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--ink-300)', lineHeight: 1.6 }}>
+          Shopify: <strong style={{ color: SHOP_CONFIG.SHOP_DOMAIN ? '#4ade80' : '#f87171' }}>{SHOP_CONFIG.SHOP_DOMAIN ? SHOP_CONFIG.SHOP_DOMAIN : 'Not connected'}</strong>
+          <br />
+          Checkout mode: <strong style={{ color: SHOP_CONFIG.SHOP_DOMAIN ? '#4ade80' : '#fbbf24' }}>{SHOP_CONFIG.SHOP_DOMAIN ? 'Live Shopify checkout' : 'Reserve via email (orders@latinomagic.com)'}</strong>
+        </p>
       </div>
     </div>
   );
@@ -3422,6 +3566,9 @@ function LegalPage({ pageKey, onNavigate }) {
             <a onClick={() => onNavigate('legal-privacy')} style={{ cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>Privacy</a>
             <a onClick={() => onNavigate('legal-terms')} style={{ cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>Terms</a>
             <a onClick={() => onNavigate('legal-returns')} style={{ cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>Returns</a>
+            <a onClick={() => onNavigate('setup')} style={{ cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3, color: SHOP_CONFIG.SHOP_DOMAIN ? '#16a34a' : 'var(--magenta-400)' }}>
+              {SHOP_CONFIG.SHOP_DOMAIN ? '● Live' : '⚙ Store Setup'}
+            </a>
           </div>
         </div>
       </div>
@@ -3440,7 +3587,7 @@ function AppV2() {
   const [lang, setLang] = useState('en');
   const str = TRANSLATIONS[lang];
 
-  // Page state machine: 'home' | 'store' | 'product' | 'legal-returns' | 'legal-privacy' | 'legal-terms'
+  // Page state machine: 'home' | 'store' | 'product' | 'setup' | 'legal-returns' | 'legal-privacy' | 'legal-terms'
   const [page, setPage] = useState('home');
   const [storeCategory, setStoreCategory] = useState(null);
   const [productDetail, setProductDetail] = useState(null);
@@ -3458,7 +3605,7 @@ function AppV2() {
   const handleCardClick = (product) => navigate('product', { product });
   const handleNavigateStore = (category) => navigate('store', { category });
 
-  const isLegalPage = page.startsWith('legal-');
+  const isLegalPage = page.startsWith('legal-') || page === 'setup';
 
   return (
     <LangContext.Provider value={{ str, lang, setLang, navigate }}>
@@ -3515,7 +3662,11 @@ function AppV2() {
             />
           )}
 
-          {isLegalPage && (
+          {page === 'setup' && (
+            <SetupGuidePage onNavigate={navigate} />
+          )}
+
+          {page.startsWith('legal-') && (
             <LegalPage
               pageKey={page}
               onNavigate={navigate}
