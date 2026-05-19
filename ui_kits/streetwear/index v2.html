@@ -318,6 +318,8 @@ const TRANSLATIONS = {
     keepShopping: 'Keep shopping',
     removeItem: 'Remove', subtotalLabel: 'Subtotal', checkoutBtn: 'Checkout →',
     freeShippingIncluded: '✓ Free shipping included',
+    savedItems: 'Saved Items', noSavedItems: 'No saved items yet.', browseAndSave: 'Tap ♡ on any product to save it here.',
+    enterShipping: 'Enter Shipping Info', placeOrderPay: 'Place Order — Pay via PayPal →', orderConfirmed: '✓ Order received!',
     // Footer
     shopCol: 'Shop', theHouse: 'The House', helpCol: 'Help',
     lookbookLink: 'Lookbook', dropCalendar: 'Drop calendar', about: 'About', press: 'Press',
@@ -391,6 +393,8 @@ const TRANSLATIONS = {
     keepShopping: 'Seguir comprando',
     removeItem: 'Eliminar', subtotalLabel: 'Subtotal', checkoutBtn: 'Pagar →',
     freeShippingIncluded: '✓ Envío gratis incluido',
+    savedItems: 'Artículos guardados', noSavedItems: 'Sin artículos guardados.', browseAndSave: 'Toca ♡ en cualquier producto para guardarlo aquí.',
+    enterShipping: 'Datos de envío', placeOrderPay: 'Hacer pedido — Pagar con PayPal →', orderConfirmed: '✓ Pedido recibido!',
     // Footer
     shopCol: 'Comprar', theHouse: 'La casa', helpCol: 'Ayuda',
     lookbookLink: 'Lookbook', dropCalendar: 'Calendario de drops', about: 'Nosotros', press: 'Prensa',
@@ -404,7 +408,7 @@ const TRANSLATIONS = {
   },
 };
 
-const LangContext = createContext({ str: TRANSLATIONS.en, lang: 'en', setLang: () => {}, navigate: () => {} });
+const LangContext = createContext({ str: TRANSLATIONS.en, lang: 'en', setLang: () => {}, navigate: () => {}, wishlist: [], toggleWishlist: () => {}, setWishlistOpen: () => {} });
 
 /* ============================================================
    COUNTDOWN BANNER
@@ -472,7 +476,7 @@ function CountdownBanner() {
    HEADER V2
    ============================================================ */
 function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore }) {
-  const { str, lang, setLang, navigate } = useContext(LangContext);
+  const { str, lang, setLang, navigate, wishlist, setWishlistOpen } = useContext(LangContext);
   const personas = ['Women', 'Men', 'Unisex', 'Sport'];
   const personaLabels = { Women: str.women, Men: str.men, Unisex: str.unisex, Sport: str.sport };
   const mega = {
@@ -573,11 +577,11 @@ function HeaderV2({ cartCount, onOpenCart, persona, setPersona, onNavigateStore 
 
         {/* Utility */}
         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 18 }}>
-          <a style={utilLink} aria-label={str.wishlist} role="button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            <span>{str.wishlist}</span>
-          </a>
-          <a style={utilLink} aria-label={str.account} role="button">
+          <button onClick={() => setWishlistOpen(true)} style={{ ...utilLink, background: 'transparent', border: 'none', padding: 0, position: 'relative' }} aria-label={str.wishlist}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={wishlist.length > 0 ? 'var(--magenta-500)' : 'none'} stroke={wishlist.length > 0 ? 'var(--magenta-500)' : 'currentColor'} strokeWidth="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>{str.wishlist}{wishlist.length > 0 ? ` (${wishlist.length})` : ''}</span>
+          </button>
+          <a style={utilLink} aria-label={str.account} role="button" onClick={() => setWishlistOpen(true)}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
             <span>{str.account}</span>
           </a>
@@ -1045,7 +1049,7 @@ function ShopByCategory() {
 function ProductCard({ product, onQuickView, onCardClick }) {
   const [hover, setHover] = useState(false);
   const isMobile = useMobile();
-  const { navigate } = useContext(LangContext);
+  const { navigate, wishlist, toggleWishlist } = useContext(LangContext);
   const handleColorClick = (e, hex) => {
     e.stopPropagation();
     if (hex === product.swatch) return;
@@ -1097,6 +1101,28 @@ function ProductCard({ product, onQuickView, onCardClick }) {
             color: '#fff',
           }}>{product.tag}</span>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}
+          aria-label={wishlist.includes(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+          style={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            width: 34,
+            height: 34,
+            background: 'rgba(255,255,255,0.88)',
+            border: 'none',
+            borderRadius: 999,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill={wishlist.includes(product.id) ? 'var(--magenta-500)' : 'none'} stroke={wishlist.includes(product.id) ? 'var(--magenta-500)' : 'var(--ink-700)'} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
         {(hover || isMobile) && (
           <button
             onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
@@ -2545,7 +2571,39 @@ function QuickView({ product, onClose, onAdd }) {
    ============================================================ */
 function CartDrawer({ open, items, onClose, onRemove }) {
   const { str, lang } = useContext(LangContext);
-  const subtotal = items.reduce((s, it) => s + it.price, 0);
+  const subtotal = items.reduce((s, it) => s + Number(it.price), 0);
+  const [checkStep, setCheckStep] = React.useState('idle'); // idle | form | loading | done | error
+  const [form, setForm] = React.useState({ name: '', email: '', address1: '', city: '', state: '', zip: '' });
+  const [result, setResult] = React.useState(null);
+
+  // Reset checkout state when drawer closes
+  React.useEffect(() => { if (!open) { setCheckStep('idle'); setResult(null); } }, [open]);
+
+  async function submitOrder(e) {
+    e.preventDefault();
+    setCheckStep('loading');
+    try {
+      const res = await fetch(SHOP_CONFIG.CHECKOUT_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: items.map(it => ({ productId: it.id, productName: it.name, price: it.price, size: it.size })),
+          total: subtotal,
+          customerName: form.name,
+          customerEmail: form.email,
+          customerAddress: { address1: form.address1, city: form.city, state: form.state, zip: form.zip, country: 'US' },
+        }),
+      });
+      const data = await res.json();
+      setResult(data);
+      setCheckStep('done');
+    } catch (err) {
+      setCheckStep('error');
+    }
+  }
+
+  const inputStyle = { padding: '10px 12px', fontFamily: 'var(--font-body)', fontSize: 14, border: '1.5px solid var(--ink-300)', outline: 'none', width: '100%', boxSizing: 'border-box' };
+  const labelStyle = { fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--fg-3)', display: 'block', marginBottom: 4 };
   return (
     <>
       {open && (
@@ -2681,33 +2739,75 @@ function CartDrawer({ open, items, onClose, onRemove }) {
 
         {items.length > 0 && (
           <div style={{ padding: 24, borderTop: '1px solid var(--line)', background: '#fff' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-              <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)' }}>{str.subtotalLabel}</div>
-              <div style={{ fontFamily: 'var(--font-impact)', fontSize: 24, color: 'var(--ink-900)' }}>${subtotal}</div>
-            </div>
-            <button style={{
-              width: '100%',
-              padding: '16px 24px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 800,
-              fontSize: 13,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              background: 'var(--ink-900)',
-              color: '#fff',
-              border: '2px solid var(--ink-900)',
-              boxShadow: '4px 4px 0 0 var(--magenta-500)',
-              cursor: 'pointer',
-            }}>{str.checkoutBtn}</button>
-            <div style={{
-              fontFamily: 'var(--font-body)',
-              fontSize: 11,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--fg-3)',
-              marginTop: 12,
-              textAlign: 'center',
-            }}>{subtotal >= 150 ? str.freeShippingIncluded : (lang === 'en' ? `Add $${150 - subtotal} for free shipping` : `Agrega $${150 - subtotal} para envío gratis`)}</div>
+
+            {/* IDLE: show subtotal + checkout button */}
+            {checkStep === 'idle' && (<>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)' }}>{str.subtotalLabel}</div>
+                <div style={{ fontFamily: 'var(--font-impact)', fontSize: 24, color: 'var(--ink-900)' }}>${subtotal}</div>
+              </div>
+              <button onClick={() => setCheckStep('form')} style={{ width: '100%', padding: '16px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: '2px solid var(--ink-900)', boxShadow: '4px 4px 0 0 var(--magenta-500)', cursor: 'pointer' }}>{str.checkoutBtn}</button>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)', marginTop: 12, textAlign: 'center' }}>
+                {subtotal >= 150 ? str.freeShippingIncluded : (lang === 'en' ? `Add $${150 - subtotal} for free shipping` : `Agrega $${150 - subtotal} para envío gratis`)}
+              </div>
+            </>)}
+
+            {/* FORM: shipping info */}
+            {checkStep === 'form' && (
+              <form onSubmit={submitOrder} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{str.enterShipping}</div>
+                {[
+                  { key: 'name', label: lang === 'en' ? 'Full Name' : 'Nombre completo', placeholder: 'Maria Rodriguez', type: 'text' },
+                  { key: 'email', label: 'Email', placeholder: 'you@email.com', type: 'email' },
+                  { key: 'address1', label: lang === 'en' ? 'Street Address' : 'Dirección', placeholder: '123 Main St', type: 'text' },
+                  { key: 'city', label: lang === 'en' ? 'City' : 'Ciudad', placeholder: 'Miami', type: 'text' },
+                  { key: 'state', label: lang === 'en' ? 'State' : 'Estado', placeholder: 'FL', type: 'text' },
+                  { key: 'zip', label: 'ZIP / Postal', placeholder: '33101', type: 'text' },
+                ].map(f => (
+                  <div key={f.key}>
+                    <label style={labelStyle}>{f.label}</label>
+                    <input type={f.type} required placeholder={f.placeholder} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} style={inputStyle} />
+                  </div>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--fg-3)', alignSelf: 'center' }}>{str.subtotalLabel}: <span style={{ color: 'var(--ink-900)', fontFamily: 'var(--font-impact)', fontSize: 20 }}>${subtotal}</span></div>
+                </div>
+                <button type="submit" style={{ width: '100%', padding: '16px 20px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: '2px solid var(--ink-900)', boxShadow: '4px 4px 0 0 var(--magenta-500)', cursor: 'pointer', marginTop: 4 }}>{str.placeOrderPay}</button>
+                <button type="button" onClick={() => setCheckStep('idle')} style={{ background: 'none', border: 'none', fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--fg-3)', cursor: 'pointer', textDecoration: 'underline', textAlign: 'center' }}>{lang === 'en' ? '← Back to bag' : '← Volver a la bolsa'}</button>
+              </form>
+            )}
+
+            {/* LOADING */}
+            {checkStep === 'loading' && (
+              <div style={{ padding: '20px 0', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-2)' }}>
+                {lang === 'en' ? 'Processing your order...' : 'Procesando tu pedido...'}
+              </div>
+            )}
+
+            {/* DONE: show PayPal link */}
+            {checkStep === 'done' && result && (<>
+              <div style={{ padding: '14px 16px', background: '#f0fdf4', border: '1.5px solid #86efac', fontFamily: 'var(--font-body)', fontSize: 13, color: '#166534', marginBottom: 12, lineHeight: 1.5 }}>
+                <strong>{str.orderConfirmed}</strong><br />
+                {lang === 'en' ? 'Ref' : 'Ref'}: <code style={{ fontWeight: 700 }}>{result.ref}</code>
+              </div>
+              <a href={result.paymentUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', padding: '16px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: '#0070ba', color: '#fff', border: 'none', cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+                {lang === 'en' ? `Pay $${subtotal} via PayPal →` : `Pagar $${subtotal} con PayPal →`}
+              </a>
+              <p style={{ margin: '10px 0 0', fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--fg-3)', textAlign: 'center', lineHeight: 1.5 }}>
+                {lang === 'en' ? 'After payment, your order ships within 3–5 business days.' : 'Después del pago, tu pedido llega en 3–5 días hábiles.'}
+              </p>
+            </>)}
+
+            {/* ERROR */}
+            {checkStep === 'error' && (<>
+              <div style={{ padding: '14px 16px', background: '#fef2f2', border: '1.5px solid #fca5a5', fontFamily: 'var(--font-body)', fontSize: 13, color: '#991b1b', marginBottom: 10 }}>
+                {lang === 'en' ? 'Something went wrong. Email orders@latinomagic.com' : 'Algo salió mal. Escríbenos a orders@latinomagic.com'}
+              </div>
+              <button onClick={() => setCheckStep('idle')} style={{ width: '100%', padding: '14px 20px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', background: 'var(--ink-900)', color: '#fff', border: '2px solid var(--ink-900)', cursor: 'pointer' }}>
+                {lang === 'en' ? 'Try Again' : 'Intentar de nuevo'}
+              </button>
+            </>)}
+
           </div>
         )}
       </aside>
@@ -3210,7 +3310,7 @@ function Lightbox({ images, startIdx, swatch, fit, onClose }) {
    PRODUCT PAGE
    ============================================================ */
 function ProductPage({ product, onBack, onQuickView, onAdd }) {
-  const { str, navigate } = useContext(LangContext);
+  const { str, navigate, wishlist, toggleWishlist } = useContext(LangContext);
   const [imgIdx, setImgIdx] = useState(0);
   const [size, setSize] = useState(null);
   const [descOpen, setDescOpen] = useState(true);
@@ -3341,7 +3441,17 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
             color: 'var(--ink-900)',
           }}>{product.name}</h1>
 
-          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 32, color: 'var(--ink-900)', marginTop: 18 }}>${product.price}</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 18 }}>
+            <div style={{ fontFamily: 'var(--font-impact)', fontSize: 32, color: 'var(--ink-900)' }}>${product.price}</div>
+            <button
+              onClick={() => toggleWishlist(product.id)}
+              aria-label={wishlist.includes(product.id) ? 'Remove from wishlist' : 'Save to wishlist'}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'transparent', border: '1.5px solid ' + (wishlist.includes(product.id) ? 'var(--magenta-500)' : 'var(--ink-300)'), padding: '8px 14px', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: wishlist.includes(product.id) ? 'var(--magenta-500)' : 'var(--ink-600)', transition: 'all 180ms' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={wishlist.includes(product.id) ? 'var(--magenta-500)' : 'none'} stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              {wishlist.includes(product.id) ? 'Saved' : 'Save'}
+            </button>
+          </div>
 
           {/* Color swatches */}
           <div style={{ marginTop: 22 }}>
@@ -3423,7 +3533,18 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
               </p>
             </>
           ) : (
-            <CheckoutButton product={product} size={size} />
+            <div style={{ marginTop: 24 }}>
+              <button
+                disabled={!size}
+                onClick={() => { if (!size || typeof onAdd !== 'function') return; onAdd({ ...product, size }); }}
+                style={{ width: '100%', padding: '18px 24px', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', background: size ? 'var(--ink-900)' : 'var(--ink-200)', color: size ? '#fff' : 'var(--ink-400)', border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-200)'), boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none', cursor: size ? 'pointer' : 'not-allowed', transition: 'all 220ms var(--ease-out)' }}
+              >
+                {size ? str.addToBag : str.pickSize}
+              </button>
+              <p style={{ marginTop: 8, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                {str.freeShippingMin} · {str.returnsLabel}
+              </p>
+            </div>
           )}
 
           {/* Trust signals */}
@@ -3778,6 +3899,70 @@ function LegalPage({ pageKey, onNavigate }) {
 /* ============================================================
    APP V2 — ROOT
    ============================================================ */
+/* ============================================================
+   WISHLIST PANEL
+   ============================================================ */
+function WishlistPanel({ open, wishlist, onClose, toggleWishlist }) {
+  const { str, navigate } = useContext(LangContext);
+  const savedProducts = PRODUCTS.filter(p => wishlist.includes(p.id));
+  return (
+    <>
+      {open && (
+        <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 90, animation: 'lmFadeIn 220ms var(--ease-out)' }} />
+      )}
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label={str.savedItems}
+        style={{ position: 'fixed', top: 0, right: 0, height: '100vh', width: 420, maxWidth: '100vw', background: 'var(--paper)', zIndex: 91, transform: open ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 320ms var(--ease-out)', display: 'flex', flexDirection: 'column', borderLeft: '1px solid var(--line)' }}
+      >
+        <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--line)' }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-impact)', fontSize: 28, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--ink-900)' }}>{str.savedItems}</div>
+            {savedProducts.length > 0 && <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>{savedProducts.length} {savedProducts.length === 1 ? 'item' : 'items'}</div>}
+          </div>
+          <button onClick={onClose} aria-label="Close wishlist" style={{ width: 44, height: 44, background: 'transparent', border: 'none', cursor: 'pointer', fontSize: 22, color: 'var(--ink-700)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 24px' }}>
+          {savedProducts.length === 0 ? (
+            <div style={{ padding: '48px 0', textAlign: 'center' }}>
+              <div style={{ marginBottom: 16 }}>
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--magenta-400)" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div style={{ fontFamily: 'var(--font-script)', fontStyle: 'italic', fontSize: 22, color: 'var(--magenta-400)', marginBottom: 8 }}>{str.noSavedItems}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--fg-3)', marginBottom: 24, lineHeight: 1.5 }}>{str.browseAndSave}</div>
+              <button onClick={onClose} style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '14px 28px', background: 'var(--ink-900)', color: '#fff', border: '2px solid var(--ink-900)', cursor: 'pointer' }}>{str.keepShopping}</button>
+            </div>
+          ) : (
+            savedProducts.map(p => (
+              <div key={p.id} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: '1px solid var(--line)' }}>
+                <div
+                  onClick={() => { onClose(); navigate('product', { product: p }); }}
+                  style={{ width: 78, height: 92, background: p.swatch, backgroundImage: `url('../../${p.images[0]}')`, backgroundSize: p.fit === 'contain' ? 'contain' : 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', flexShrink: 0, cursor: 'pointer' }}
+                />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase', letterSpacing: '-0.005em', lineHeight: 1.2, color: 'var(--ink-900)' }}>{p.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--fg-3)', marginTop: 3 }}>{p.subtitle}</div>
+                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 10 }}>
+                    <div style={{ fontFamily: 'var(--font-impact)', fontSize: 18, color: 'var(--ink-900)' }}>${p.price}</div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <button onClick={() => { onClose(); navigate('product', { product: p }); }} style={{ background: 'var(--ink-900)', color: '#fff', border: 'none', fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', padding: '8px 14px', cursor: 'pointer' }}>Shop →</button>
+                      <button onClick={() => toggleWishlist(p.id)} aria-label="Remove from wishlist" style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 4 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--magenta-500)" stroke="var(--magenta-500)" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </aside>
+    </>
+  );
+}
+
 function AppV2() {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -3801,6 +3986,18 @@ function AppV2() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const [wishlist, setWishlist] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lm_wishlist') || '[]'); } catch { return []; }
+  });
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const toggleWishlist = (productId) => {
+    setWishlist(prev => {
+      const next = prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId];
+      try { localStorage.setItem('lm_wishlist', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
   const addToCart = (item) => { setCart(c => [...c, item]); setCartOpen(true); };
   const removeFromCart = (idx) => setCart(c => c.filter((_, i) => i !== idx));
 
@@ -3810,7 +4007,7 @@ function AppV2() {
   const isLegalPage = page.startsWith('legal-') || page === 'setup';
 
   return (
-    <LangContext.Provider value={{ str, lang, setLang, navigate }}>
+    <LangContext.Provider value={{ str, lang, setLang, navigate, wishlist, toggleWishlist, wishlistOpen, setWishlistOpen }}>
       <div className="lm-base" style={{ background: isLegalPage ? '#fff' : 'var(--paper)', color: 'var(--ink-900)', minHeight: '100vh' }}>
         <a href="#main-content" className="lm-skip">Skip to content</a>
 
@@ -3882,6 +4079,7 @@ function AppV2() {
 
         <QuickView product={quickView} onClose={() => setQuickView(null)} onAdd={addToCart} />
         <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onRemove={removeFromCart} />
+        <WishlistPanel open={wishlistOpen} wishlist={wishlist} onClose={() => setWishlistOpen(false)} toggleWishlist={toggleWishlist} />
       </div>
     </LangContext.Provider>
   );

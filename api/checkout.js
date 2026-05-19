@@ -56,35 +56,65 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const {
-    productId, productName, price, size,
-    customerName, customerEmail, customerAddress
-  } = req.body;
+  const { customerName, customerEmail, customerAddress } = req.body;
 
-  if (!productId || !size || !customerEmail || !customerName) {
+  if (!customerEmail || !customerName) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const token = process.env.PRINTFUL_API_TOKEN;
-  const storeId = process.env.PRINTFUL_STORE_ID || '12157875';
   const paymentBase = process.env.PAYMENT_URL || 'https://paypal.me/latinomagic';
+  const ref = `LM-${Date.now().toString(36).toUpperCase()}`;
 
-  // Lookup Printful variant ID
+  // Support both cart array (items[]) and legacy single-item format
+  const isCart = Array.isArray(req.body.items) && req.body.items.length > 0;
+
+  if (isCart) {
+    // ── CART CHECKOUT ──
+    const items = req.body.items;
+    const total = req.body.total || items.reduce((s, it) => s + Number(it.price), 0);
+
+    // Enrich each item with Printful variant ID for manual fulfillment reference
+    const enriched = items.map(it => {
+      const variantIds = VARIANT_MAP[it.productId] || {};
+      const variantId = it.size ? (variantIds[it.size] || variantIds[it.size.toUpperCase()] || 'UNMAPPED') : 'NO_SIZE';
+      return { ...it, variantId };
+    });
+
+    // Log full cart order to Vercel function logs for manual Printful fulfillment
+    // Steps after PayPal payment confirmed:
+    //   1. Go to printful.com/dashboard → Orders → Create Order (one per item)
+    //   2. Select product + size using variantId from VARIANT_MAP above
+    //   3. Upload print file for each item
+    //   4. Ship to customer address below
+    console.log('NEW CART ORDER', JSON.stringify({
+      ref,
+      items: enriched,
+      total,
+      customer: { name: customerName, email: customerEmail, address: customerAddress },
+      ts: new Date().toISOString(),
+    }));
+
+    const paymentUrl = `${paymentBase}/${total}`;
+    return res.status(200).json({
+      success: true,
+      ref,
+      paymentUrl,
+      message: `Order received! Pay $${total} via PayPal to confirm. Ref: ${ref}`,
+    });
+  }
+
+  // ── LEGACY SINGLE-ITEM CHECKOUT (kept for backwards compat) ──
+  const { productId, productName, price, size } = req.body;
+
+  if (!productId || !size) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
   const variantIds = VARIANT_MAP[productId] || {};
   const variantId = variantIds[size] || variantIds[size.toUpperCase()];
 
-  let printfulOrderId = null;
-
-  // Log order details to console (visible in Vercel function logs)
-  // Printful orders are created manually by owner after payment confirmation
-  // because print files must be attached per-order in the Printful dashboard.
-  // Steps after PayPal payment confirmed:
-  //   1. Go to printful.com/dashboard → Orders → Create Order
-  //   2. Select product + size (variant IDs in VARIANT_MAP above)
-  //   3. Upload print file for the customer's order
-  //   4. Ship directly to the customer address logged below
   console.log('NEW ORDER', JSON.stringify({
-    ref: `pending-${Date.now()}`,
+    ref,
     product: productName,
     productId,
     size,
@@ -94,12 +124,7 @@ export default async function handler(req, res) {
     ts: new Date().toISOString(),
   }));
 
-  // Generate PayPal payment link
   const paymentUrl = `${paymentBase}/${price}`;
-
-  // Order reference
-  const ref = `LM-${Date.now().toString(36).toUpperCase()}`;
-
   return res.status(200).json({
     success: true,
     ref,
