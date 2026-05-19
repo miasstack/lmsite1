@@ -76,47 +76,24 @@ export default async function handler(req, res) {
 
   let printfulOrderId = null;
 
-  // If we have a variant ID and Printful token, create a draft order
-  if (token && variantId && customerAddress) {
-    try {
-      const pfRes = await fetch(`${PRINTFUL_API}/orders`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'X-PF-Store-Id': storeId,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          recipient: {
-            name: customerName,
-            email: customerEmail,
-            address1: customerAddress.address1 || '',
-            city: customerAddress.city || '',
-            state_code: customerAddress.state || 'FL',
-            zip: customerAddress.zip || '',
-            country_code: customerAddress.country || 'US',
-          },
-          items: [{
-            variant_id: variantId,
-            quantity: 1,
-            retail_price: String(price),
-            options: [{ id: 'stitch_color', value: 'black' }],
-            // NOTE: design files added manually by owner after payment confirmed
-          }],
-          notes: `WEB ORDER — ${productName} size ${size}. AWAIT PAYMENT CONFIRMATION before fulfilling.`,
-        }),
-      });
-      const pfData = await pfRes.json();
-      if (pfData.code === 200 || pfData.result?.id) {
-        printfulOrderId = pfData.result?.id;
-        console.log('Printful draft order created:', printfulOrderId);
-      } else {
-        console.error('Printful order error:', JSON.stringify(pfData));
-      }
-    } catch (e) {
-      console.error('Printful draft order failed:', e.message);
-    }
-  }
+  // Log order details to console (visible in Vercel function logs)
+  // Printful orders are created manually by owner after payment confirmation
+  // because print files must be attached per-order in the Printful dashboard.
+  // Steps after PayPal payment confirmed:
+  //   1. Go to printful.com/dashboard → Orders → Create Order
+  //   2. Select product + size (variant IDs in VARIANT_MAP above)
+  //   3. Upload print file for the customer's order
+  //   4. Ship directly to the customer address logged below
+  console.log('NEW ORDER', JSON.stringify({
+    ref: `pending-${Date.now()}`,
+    product: productName,
+    productId,
+    size,
+    variantId: variantId || 'UNMAPPED',
+    price,
+    customer: { name: customerName, email: customerEmail, address: customerAddress },
+    ts: new Date().toISOString(),
+  }));
 
   // Generate PayPal payment link
   const paymentUrl = `${paymentBase}/${price}`;
@@ -128,9 +105,6 @@ export default async function handler(req, res) {
     success: true,
     ref,
     paymentUrl,
-    printfulOrderId,
-    message: printfulOrderId
-      ? `Draft order #${printfulOrderId} created in Printful. Pay via PayPal to confirm.`
-      : `Order received! Pay via PayPal to confirm. Ref: ${ref}`,
+    message: `Order received! Pay $${price} via PayPal to confirm. Ref: ${ref}`,
   });
 }
