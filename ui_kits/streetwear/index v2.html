@@ -830,7 +830,7 @@ function HeroV3({ onShop }) {
    GENDER SPLIT
    ============================================================ */
 function GenderSplit() {
-  const { str } = useContext(LangContext);
+  const { str, navigate } = useContext(LangContext);
   const [hover, setHover] = useState(null);
   const sides = [
     {
@@ -857,6 +857,7 @@ function GenderSplit() {
           <a key={s.id}
             onMouseEnter={() => setHover(s.id)}
             onMouseLeave={() => setHover(null)}
+            onClick={() => navigate('store', { category: s.id === 'women' ? 'Women' : 'Men' })}
             style={{
               cursor: 'pointer',
               position: 'relative',
@@ -960,7 +961,11 @@ function DropMarquee() {
    SHOP BY CATEGORY
    ============================================================ */
 function ShopByCategory() {
-  const { str } = useContext(LangContext);
+  const { str, navigate } = useContext(LangContext);
+  const catNav = {
+    Tracksuits: 'Tracksuits', Bikinis: 'Bikinis', Active: 'Activewear',
+    Bombers: 'Bombers', Tops: 'Tops', Joggers: 'Joggers', 'LM Luxe': null,
+  };
   const cats = [
     { name: 'Tracksuits', bg: '#87C2DD', img: '../../assets/lookbook-stairs-latina-tracksuit.png',         fit: 'cover' },
     { name: 'Bikinis',    bg: '#87C2DD', img: '../../assets/lookbook-bikini-beach-cartagena.png',          fit: 'cover' },
@@ -983,7 +988,7 @@ function ShopByCategory() {
             textTransform: 'uppercase',
             color: 'var(--ink-900)',
           }}>{str.shopByCategory}</h2>
-          <a style={{
+          <a onClick={() => navigate('store')} style={{
             fontFamily: 'var(--font-body)',
             fontWeight: 700,
             fontSize: 11,
@@ -997,7 +1002,7 @@ function ShopByCategory() {
         </div>
         <div className="lm-cats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
           {cats.map(c => (
-            <a key={c.name} style={{ cursor: 'pointer', display: 'block' }}>
+            <a key={c.name} onClick={() => catNav[c.name] && navigate('store', { category: catNav[c.name] })} style={{ cursor: 'pointer', display: 'block' }}>
               <div style={{
                 aspectRatio: '4/5',
                 background: c.bg,
@@ -1043,6 +1048,13 @@ function ShopByCategory() {
 function ProductCard({ product, onQuickView, onCardClick }) {
   const [hover, setHover] = useState(false);
   const isMobile = useMobile();
+  const { navigate } = useContext(LangContext);
+  const handleColorClick = (e, hex) => {
+    e.stopPropagation();
+    if (hex === product.swatch) return;
+    const match = PRODUCTS.find(p => p.swatch === hex && p.category === product.category);
+    if (match) navigate('product', { product: match });
+  };
   const img = product.images[hover && product.images.length > 1 ? 1 : 0];
 
   return (
@@ -1139,7 +1151,7 @@ function ProductCard({ product, onQuickView, onCardClick }) {
           <div style={{ fontFamily: 'var(--font-impact)', fontSize: 22, color: 'var(--ink-900)' }}>${product.price}</div>
           <div style={{ display: 'flex', gap: 4 }}>
             {product.colorways.map((c, i) => (
-              <span key={i} style={{ width: 10, height: 10, background: c, borderRadius: 999, border: '1px solid rgba(0,0,0,0.08)' }} />
+              <span key={i} onClick={(e) => handleColorClick(e, c)} style={{ width: 10, height: 10, background: c, borderRadius: 999, border: c === product.swatch ? '2px solid var(--ink-700)' : '1px solid rgba(0,0,0,0.08)', cursor: c === product.swatch ? 'default' : 'pointer', outline: c === product.swatch ? '1px solid rgba(0,0,0,0.2)' : 'none', outlineOffset: 1 }} />
             ))}
           </div>
         </div>
@@ -1270,8 +1282,6 @@ const PRODUCTS = [
     images: [
       'assets/lookbook-bikini-pink-front.png',
       'assets/lookbook-bikini-pink-pose.png',
-      'assets/mockup-bikini-pink-front.png',
-      'assets/mockup-bikini-pink-back.png',
     ],
     swatch: '#E8B5BB',
     colorways: ['#E8B5BB', '#87C2DD', '#C9B5E0'],
@@ -1286,7 +1296,11 @@ const PRODUCTS = [
     name: '"Es Una Chimba" Bikini',
     subtitle: 'Tagline edition · purple',
     price: 95,
-    images: ['assets/lookbook-bikini-purple-back-chimba.png'],
+    images: [
+      'assets/lookbook-bikini-purple-back-chimba.png',
+      'assets/mockup-bikini-pink-front.png',
+      'assets/mockup-bikini-pink-back.png',
+    ],
     swatch: '#C9B5E0',
     colorways: ['#C9B5E0'],
     tag: 'Tagline',
@@ -2726,11 +2740,11 @@ function Footer({ onNavigate }) {
   const { str } = useContext(LangContext);
   const cols = [
     { title: str.shopCol, items: [
-      { label: str.women },
-      { label: str.men },
-      { label: str.unisex },
-      { label: str.sport },
-      { label: 'LM Luxe' },
+      { label: str.women,  page: 'store-women' },
+      { label: str.men,    page: 'store-men' },
+      { label: str.unisex, page: 'store' },
+      { label: str.sport,  page: 'store-activewear' },
+      { label: 'LM Luxe',  page: 'store' },
     ]},
     { title: str.theHouse, items: [
       { label: str.lookbookLink },
@@ -3666,7 +3680,10 @@ function AppV2() {
   const [productDetail, setProductDetail] = useState(null);
 
   const navigate = (target, opts = {}) => {
-    setPage(target);
+    if (target === 'store-women')     { setPage('store'); setStoreCategory('Women'); }
+    else if (target === 'store-men')  { setPage('store'); setStoreCategory('Men'); }
+    else if (target === 'store-activewear') { setPage('store'); setStoreCategory('Activewear'); }
+    else { setPage(target); }
     if (opts.category !== undefined) setStoreCategory(opts.category);
     if (opts.product !== undefined) setProductDetail(opts.product);
     window.scrollTo({ top: 0, behavior: 'smooth' });
