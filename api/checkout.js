@@ -14,7 +14,6 @@ const VARIANT_MAP = {
   'bikini-black-lm-bandidas': { XS:16554, S:16555, M:16556, L:16557, XL:16558 },
   'bikini-lm-blue':           { XS:16554, S:16555, M:16556, L:16557, XL:16558 },
   'bikini-pink':              { XS:16554, S:16555, M:16556, L:16557, XL:16558 },
-  'bikini-purple-chimba':     { XS:16554, S:16555, M:16556, L:16557, XL:16558 },
   'bikini-black-bandidas':    { XS:16554, S:16555, M:16556, L:16557, XL:16558 },
   // One-Piece Swimsuit (catalog product 272)
   'swimsuit-onepiece': { XS:4880, S:4881, M:4882, L:4883, XL:4884 },
