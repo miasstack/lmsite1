@@ -100,6 +100,7 @@ export default async function handler(req, res) {
             variant_id: variantId,
             quantity: 1,
             retail_price: String(price),
+            options: [{ id: 'stitch_color', value: 'black' }],
             // NOTE: design files added manually by owner after payment confirmed
           }],
           notes: `WEB ORDER — ${productName} size ${size}. AWAIT PAYMENT CONFIRMATION before fulfilling.`,
@@ -108,6 +109,9 @@ export default async function handler(req, res) {
       const pfData = await pfRes.json();
       if (pfData.code === 200 || pfData.result?.id) {
         printfulOrderId = pfData.result?.id;
+        console.log('Printful draft order created:', printfulOrderId);
+      } else {
+        console.error('Printful order error:', JSON.stringify(pfData));
       }
     } catch (e) {
       console.error('Printful draft order failed:', e.message);
