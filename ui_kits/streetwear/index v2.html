@@ -3122,15 +3122,122 @@ function StorePage({ onQuickView, onCardClick, initialCategory }) {
 }
 
 /* ============================================================
+   LIGHTBOX
+   ============================================================ */
+function Lightbox({ images, startIdx, swatch, fit, onClose }) {
+  const [idx, setIdx] = React.useState(startIdx);
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') setIdx(i => Math.min(i + 1, images.length - 1));
+      if (e.key === 'ArrowLeft')  setIdx(i => Math.max(i - 1, 0));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [images.length, onClose]);
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.96)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      {/* Close */}
+      <button
+        onClick={onClose}
+        style={{ position: 'absolute', top: 20, right: 24, background: 'none', border: 'none', color: '#fff', fontSize: 32, cursor: 'pointer', lineHeight: 1, zIndex: 2 }}
+        aria-label="Close"
+      >×</button>
+
+      {/* Counter */}
+      {images.length > 1 && (
+        <div style={{ position: 'absolute', top: 22, left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.6)', fontFamily: 'var(--font-body)', fontSize: 12, letterSpacing: '0.12em' }}>
+          {idx + 1} / {images.length}
+        </div>
+      )}
+
+      {/* Prev arrow */}
+      {idx > 0 && (
+        <button
+          onClick={e => { e.stopPropagation(); setIdx(i => i - 1); }}
+          style={{ position: 'absolute', left: 24, background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', fontSize: 28, width: 52, height: 52, borderRadius: 999, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          aria-label="Previous"
+        >‹</button>
+      )}
+
+      {/* Image */}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '88vw', maxHeight: '88vh',
+          width: '100%', height: '100%',
+          backgroundImage: `url('../../${images[idx]}')`,
+          backgroundSize: fit === 'contain' ? 'contain' : 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundColor: swatch,
+        }}
+      />
+
+      {/* Next arrow */}
+      {idx < images.length - 1 && (
+        <button
+          onClick={e => { e.stopPropagation(); setIdx(i => i + 1); }}
+          style={{ position: 'absolute', right: 24, background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', fontSize: 28, width: 52, height: 52, borderRadius: 999, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          aria-label="Next"
+        >›</button>
+      )}
+
+      {/* Thumbnail strip */}
+      {images.length > 1 && (
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{ position: 'absolute', bottom: 24, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 8 }}
+        >
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              style={{
+                width: 56, height: 68,
+                backgroundImage: `url('../../${img}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundColor: swatch,
+                border: i === idx ? '2px solid #fff' : '2px solid rgba(255,255,255,0.25)',
+                cursor: 'pointer',
+                padding: 0,
+                opacity: i === idx ? 1 : 0.65,
+                transition: 'opacity 150ms, border-color 150ms',
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
    PRODUCT PAGE
    ============================================================ */
 function ProductPage({ product, onBack, onQuickView, onAdd }) {
-  const { str } = useContext(LangContext);
+  const { str, navigate } = useContext(LangContext);
   const [imgIdx, setImgIdx] = useState(0);
   const [size, setSize] = useState(null);
   const [descOpen, setDescOpen] = useState(true);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
+
+  const handleColorwayClick = (hex) => {
+    if (hex === product.swatch) return;
+    const match = PRODUCTS.find(p => p.swatch === hex && p.category === product.category);
+    if (match) { navigate('product', { product: match }); setImgIdx(0); setSize(null); }
+  };
 
   if (!product) return null;
 
@@ -3196,15 +3303,19 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
         {/* Left: image gallery */}
         <div>
           {/* Main image */}
-          <div style={{
-            aspectRatio: '4/5',
-            background: product.swatch,
-            backgroundImage: `url('../../${product.images[imgIdx]}')`,
-            backgroundSize: product.fit === 'contain' ? 'contain' : 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            border: '1px solid var(--line)',
-          }} />
+          <div
+            onClick={() => setLightbox(true)}
+            style={{
+              aspectRatio: '4/5',
+              background: product.swatch,
+              backgroundImage: `url('../../${product.images[imgIdx]}')`,
+              backgroundSize: product.fit === 'contain' ? 'contain' : 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              border: '1px solid var(--line)',
+              cursor: 'zoom-in',
+            }}
+          />
           {/* Thumbnails */}
           {product.images.length > 1 && (
             <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
@@ -3253,23 +3364,34 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
               Color
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              {product.colorways.map((c, i) => (
-                <button
-                  key={i}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 999,
-                    background: c,
-                    border: i === 0 ? '2px solid var(--ink-900)' : '2px solid transparent',
-                    outline: i === 0 ? '1px solid var(--ink-300)' : 'none',
-                    outlineOffset: 2,
-                    cursor: 'pointer',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
-                    padding: 0,
-                  }}
-                />
-              ))}
+              {product.colorways.map((c, i) => {
+                const isActive = c === product.swatch;
+                const hasProduct = PRODUCTS.some(p => p.swatch === c && p.category === product.category);
+                return (
+                  <button
+                    key={i}
+                    title={hasProduct ? 'View this color' : c}
+                    onClick={() => handleColorwayClick(c)}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      borderRadius: 999,
+                      background: c,
+                      border: isActive ? '2px solid var(--ink-900)' : '2px solid transparent',
+                      outline: isActive ? '1px solid var(--ink-300)' : 'none',
+                      outlineOffset: 2,
+                      cursor: isActive ? 'default' : hasProduct ? 'pointer' : 'not-allowed',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                      padding: 0,
+                      opacity: hasProduct ? 1 : 0.4,
+                      transition: 'transform 150ms',
+                      transform: 'scale(1)',
+                    }}
+                    onMouseEnter={e => { if (!isActive && hasProduct) e.currentTarget.style.transform = 'scale(1.18)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -3337,6 +3459,15 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
           </div>
         </div>
       </div>
+      {lightbox && (
+        <Lightbox
+          images={product.images}
+          startIdx={imgIdx}
+          swatch={product.swatch}
+          fit={product.fit}
+          onClose={() => setLightbox(false)}
+        />
+      )}
     </div>
   );
 }
