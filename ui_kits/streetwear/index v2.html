@@ -309,7 +309,7 @@ const TRANSLATIONS = {
     downloadOn: 'Download on the', getItOn: 'Get it on',
     // QuickView
     sizeLabel: 'Size',
-    addToBag: 'Add to bag →', pickSize: 'Pick a size',
+    addToBag: 'Add to bag →', pickSize: 'Pick a size', buyNow: 'Buy Now →',
     freeShippingMin: 'Free shipping +$150', returnsLabel: '14-day returns',
     // Cart
     yourBag: 'Your Bag',
@@ -382,7 +382,7 @@ const TRANSLATIONS = {
     downloadOn: 'Descarga en', getItOn: 'Disponible en',
     // QuickView
     sizeLabel: 'Talla',
-    addToBag: 'Agregar →', pickSize: 'Elige una talla',
+    addToBag: 'Agregar →', pickSize: 'Elige una talla', buyNow: 'Comprar →',
     freeShippingMin: 'Envío gratis +$150', returnsLabel: 'Devoluciones 14 días',
     // Cart
     yourBag: 'Tu bolsa',
@@ -1149,9 +1149,35 @@ function ProductCard({ product, onQuickView, onCardClick }) {
 }
 
 /* ============================================================
+   SHOPIFY CONFIG — fill in your store credentials to activate checkout
+   Leave SHOP_DOMAIN blank to keep local cart (no real checkout)
+   ============================================================ */
+const SHOP_CONFIG = {
+  SHOP_DOMAIN: '',           // e.g. 'latinomagic.myshopify.com'
+  STOREFRONT_TOKEN: '',      // Storefront API public access token
+  // Map product id → Shopify variant GID (fill after creating products in Shopify)
+  // e.g. 'bikini-black-lm-bandidas': 'gid://shopify/ProductVariant/12345678'
+  variantMap: {},
+};
+
+function shopifyCheckout(product, size, addToCartFallback) {
+  if (!SHOP_CONFIG.SHOP_DOMAIN || !SHOP_CONFIG.STOREFRONT_TOKEN) {
+    addToCartFallback();
+    return;
+  }
+  const variantId = SHOP_CONFIG.variantMap[product.id + '-' + size] ||
+                    SHOP_CONFIG.variantMap[product.id];
+  if (!variantId) { addToCartFallback(); return; }
+  const encoded = btoa(variantId);
+  const checkoutUrl = `https://${SHOP_CONFIG.SHOP_DOMAIN}/cart/${encoded}:1`;
+  window.open(checkoutUrl, '_blank');
+}
+
+/* ============================================================
    PRODUCTS DATA + PRODUCT GRID
    ============================================================ */
 const PRODUCTS = [
+  /* ── BESTSELLERS / HERO ──────────────────────────────── */
   {
     id: 'bikini-black-lm-bandidas',
     name: 'LM Bandidas Bikini',
@@ -1167,8 +1193,7 @@ const PRODUCTS = [
     tag: 'Bestseller',
     tagBg: 'var(--cw-bandidas-accent)',
     sizes: ['XS', 'S', 'M', 'L'],
-    category: 'bikinis',
-    gender: 'women',
+    category: 'bikinis', gender: 'women',
     desc: 'Black triangle bikini with oversized white LM monogram. Tie-side bottoms. Recycled nylon. Tan lines guaranteed.',
   },
   {
@@ -1180,12 +1205,14 @@ const PRODUCTS = [
       'assets/lookbook-stairs-latina-tracksuit.png',
       'assets/lookbook-stairs-latina-tracksuit-2.png',
       'assets/lookbook-stone-wall-latina-tracksuit.png',
+      'assets/lookbook-tracksuit-baby-blue-mia.png',
     ],
     swatch: '#87C2DD',
     colorways: ['#87C2DD', '#F4C3D2', '#181818'],
     tag: 'Drop 02',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'tracksuits', gender: 'women',
     desc: 'Cropped hooded jacket + cuffed jogger. Signature fit. The bestseller.',
   },
   {
@@ -1204,15 +1231,20 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--ink-900)',
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    category: 'tracksuits', gender: 'men',
     desc: 'Royal-blue bomber + jogger with all-over LM monogram. Red-and-yellow varsity trim. Statement piece.',
   },
+
+  /* ── BIKINIS ─────────────────────────────────────────── */
   {
     id: 'bikini-lm-blue',
     name: 'LM Bikini · Cartagena',
-    subtitle: 'Triangle · recycled nylon',
+    subtitle: 'Baby blue · recycled nylon',
     price: 95,
     images: [
       'assets/lookbook-bikini-beach-cartagena.png',
+      'assets/mockup-bikini-baby-blue-front.png',
+      'assets/mockup-bikini-baby-blue-back.png',
       'assets/product-bikini-blue-front.png',
       'assets/product-bikini-blue-back.png',
     ],
@@ -1221,22 +1253,26 @@ const PRODUCTS = [
     tag: 'Bestseller',
     tagBg: 'var(--cw-bandera-accent)',
     sizes: ['XS', 'S', 'M', 'L'],
+    category: 'bikinis', gender: 'women',
     desc: 'String triangle bikini with embroidered LM. Recycled nylon. Tan lines guaranteed.',
   },
   {
     id: 'bikini-pink',
     name: 'LM Bikini · Rosa',
-    subtitle: 'Triangle · recycled nylon',
+    subtitle: 'Pink · recycled nylon',
     price: 95,
     images: [
       'assets/lookbook-bikini-pink-front.png',
       'assets/lookbook-bikini-pink-pose.png',
+      'assets/mockup-bikini-pink-front.png',
+      'assets/mockup-bikini-pink-back.png',
     ],
     swatch: '#E8B5BB',
     colorways: ['#E8B5BB', '#87C2DD', '#C9B5E0'],
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L'],
+    category: 'bikinis', gender: 'women',
     desc: 'Soft-pink LM bikini. Lightweight, lined. Softest thing you will wear.',
   },
   {
@@ -1250,8 +1286,45 @@ const PRODUCTS = [
     tag: 'Tagline',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L'],
+    category: 'bikinis', gender: 'women',
     desc: '"Es una chimba" printed across the back. Self-evident.',
   },
+  {
+    id: 'bikini-black-bandidas',
+    name: 'LM Bikini · Bandidas',
+    subtitle: 'Triangle · black monogram',
+    price: 95,
+    images: [
+      'assets/lookbook-bikini-black-lm-rio-stairs.jpg',
+    ],
+    swatch: '#181818',
+    colorways: ['#181818', '#87C2DD', '#E8B5BB'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['XS', 'S', 'M', 'L'],
+    category: 'bikinis', gender: 'women',
+    desc: 'Black triangle bikini with embroidered LM monogram. Shot on the stairs in Rio.',
+  },
+  {
+    id: 'swimsuit-onepiece',
+    name: 'LM One-Piece',
+    subtitle: 'Full coverage · recycled nylon',
+    price: 112,
+    images: [
+      'assets/mockup-swimsuit-onepiece-front.png',
+      'assets/mockup-swimsuit-onepiece-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#181818', '#E8B5BB'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'bikinis', gender: 'women',
+    desc: 'Full-coverage LM one-piece. All-over print on recycled nylon. Chlorine resistant.',
+  },
+
+  /* ── ACTIVEWEAR SETS ─────────────────────────────────── */
   {
     id: 'activewear-red-tribal',
     name: 'Red Tribal Active Set',
@@ -1267,6 +1340,7 @@ const PRODUCTS = [
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'activewear', gender: 'women',
     desc: 'High-impact sports bra + sculpting leggings with tribal print and Latina Magic waistband.',
   },
   {
@@ -1277,12 +1351,15 @@ const PRODUCTS = [
     images: [
       'assets/lookbook-baroque-set-front.png',
       'assets/lookbook-baroque-set-side.png',
+      'assets/lookbook-activewear-black-gold-front.png',
+      'assets/lookbook-activewear-black-gold-v2.png',
     ],
     swatch: '#181818',
     colorways: ['#181818', '#BC1F2D', '#E8B5BB'],
     tag: 'Drop 02',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'activewear', gender: 'women',
     desc: 'Black and gold filigree, signature Latina Magic waistband. Made for the night.',
   },
   {
@@ -1293,14 +1370,350 @@ const PRODUCTS = [
     images: [
       'assets/lookbook-gym-pink-set-front.png',
       'assets/lookbook-gym-pink-set-side.png',
+      'assets/lookbook-activewear-pink-front.png',
     ],
     swatch: '#E8B5BB',
     colorways: ['#E8B5BB', '#BC1F2D', '#181818'],
     tag: 'New',
     tagBg: 'var(--magenta-500)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'activewear', gender: 'women',
     desc: 'Soft-pink tattoo-art leggings with hand-script Latina Magic. Serious in the gym.',
   },
+
+  /* ── SPORTS BRAS (standalone) ────────────────────────── */
+  {
+    id: 'sports-bra-red',
+    name: 'LM Sports Bra · Red',
+    subtitle: 'Standalone · red ornate',
+    price: 65,
+    images: [
+      'assets/lookbook-sports-bra-red-wall.png',
+      'assets/mockup-sports-bra-red-front.png',
+      'assets/product-sports-bra-red-front.png',
+      'assets/product-sports-bra-red-side.png',
+    ],
+    fit: 'contain',
+    swatch: '#BC1F2D',
+    colorways: ['#BC1F2D', '#181818'],
+    tag: 'Bestseller',
+    tagBg: 'var(--cw-bandera-accent)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'activewear', gender: 'women',
+    desc: 'Signature red-ornate top. Built for cardio, club, or both.',
+  },
+  {
+    id: 'sports-bra-pink',
+    name: 'LM Sports Bra · Rosa',
+    subtitle: 'Padded · pink',
+    price: 65,
+    images: [
+      'assets/mockup-sports-bra-pink-front.png',
+      'assets/mockup-sports-bra-pink-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#E8B5BB',
+    colorways: ['#E8B5BB', '#87C2DD', '#BC1F2D'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'activewear', gender: 'women',
+    desc: 'Padded LM sports bra in soft pink. All-over print. Removable pads.',
+  },
+
+  /* ── LEGGINGS ────────────────────────────────────────── */
+  {
+    id: 'leggings-bw',
+    name: 'LM Leggings · B&W',
+    subtitle: 'High-waist · black & white',
+    price: 82,
+    images: [
+      'assets/mockup-leggings-bw-front.png',
+      'assets/mockup-leggings-bw-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#181818',
+    colorways: ['#181818', '#BC1F2D', '#87C2DD'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'leggings', gender: 'women',
+    desc: 'High-waist LM leggings in bold black-and-white print. 4-way stretch, squat-proof.',
+  },
+  {
+    id: 'leggings-red',
+    name: 'LM Leggings · Fuego',
+    subtitle: 'High-waist · red print',
+    price: 82,
+    images: [
+      'assets/mockup-leggings-red-front.png',
+      'assets/mockup-leggings-red-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#BC1F2D',
+    colorways: ['#BC1F2D', '#181818', '#87C2DD'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'leggings', gender: 'women',
+    desc: 'Fiery red LM leggings. High-waist, compressive, 4-way stretch.',
+  },
+  {
+    id: 'leggings-white',
+    name: 'LM Leggings · Blanca',
+    subtitle: 'High-waist · white print',
+    price: 82,
+    images: [
+      'assets/mockup-leggings-white-front.png',
+      'assets/mockup-leggings-white-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#E8D9C0',
+    colorways: ['#E8D9C0', '#181818', '#BC1F2D'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'leggings', gender: 'women',
+    desc: 'Clean white LM leggings with all-over monogram. High-waist, compressive.',
+  },
+
+  /* ── WOMEN'S JOGGERS ─────────────────────────────────── */
+  {
+    id: 'jogger-womens-baby-blue',
+    name: 'Women\'s LM Jogger · Baby Blue',
+    subtitle: 'Recycled · cuffed',
+    price: 72,
+    images: [
+      'assets/mockup-jogger-womens-baby-blue-front.png',
+      'assets/mockup-jogger-womens-baby-blue-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#1FA85E', '#1A3B8E'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'joggers', gender: 'women',
+    desc: 'Cuffed LM jogger in baby blue recycled fabric. Pairs with Latina tracksuit jacket.',
+  },
+  {
+    id: 'jogger-womens-blue',
+    name: 'Women\'s LM Jogger · Blue',
+    subtitle: 'Recycled · cuffed',
+    price: 72,
+    images: [
+      'assets/mockup-jogger-womens-blue-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1A3B8E',
+    colorways: ['#1A3B8E', '#87C2DD', '#1FA85E'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'joggers', gender: 'women',
+    desc: 'Cuffed LM jogger in royal blue. All-over LM monogram. Recycled nylon.',
+  },
+  {
+    id: 'jogger-womens-green',
+    name: 'Women\'s LM Jogger · Selva',
+    subtitle: 'Recycled · cuffed',
+    price: 72,
+    images: [
+      'assets/mockup-jogger-womens-green-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E', '#87C2DD', '#1A3B8E'],
+    tag: 'New',
+    tagBg: 'var(--cw-selva-accent)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'joggers', gender: 'women',
+    desc: 'Selva-green jogger with all-over LM print. Recycled, cuffed.',
+  },
+
+  /* ── MEN'S JOGGERS ───────────────────────────────────── */
+  {
+    id: 'jogger-mens-green',
+    name: 'Men\'s LM Jogger · Selva',
+    subtitle: 'Recycled · drawstring',
+    price: 78,
+    images: [
+      'assets/mockup-jogger-mens-green-front.png',
+      'assets/mockup-jogger-mens-green-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E', '#1A3B8E', '#87C2DD'],
+    tag: 'New',
+    tagBg: 'var(--cw-selva-accent)',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    category: 'joggers', gender: 'men',
+    desc: 'Men\'s LM jogger in Selva green. All-over monogram print, elastic drawstring, recycled fabric.',
+  },
+
+  /* ── WOMEN'S WINDBREAKERS ────────────────────────────── */
+  {
+    id: 'windbreaker-womens-baby-blue',
+    name: 'Women\'s LM Windbreaker · Baby Blue',
+    subtitle: 'Cropped · all-over print',
+    price: 118,
+    images: [
+      'assets/mockup-windbreaker-womens-baby-blue-front.png',
+      'assets/mockup-windbreaker-womens-baby-blue-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#1FA85E', '#1A3B8E'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'windbreakers', gender: 'women',
+    desc: 'Cropped LM windbreaker in baby blue. Zip front, all-over monogram, lightweight.',
+  },
+  {
+    id: 'windbreaker-womens-blue',
+    name: 'Women\'s LM Windbreaker · Blue',
+    subtitle: 'Cropped · all-over print',
+    price: 118,
+    images: [
+      'assets/mockup-windbreaker-womens-blue-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1A3B8E',
+    colorways: ['#1A3B8E', '#87C2DD', '#1FA85E'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'windbreakers', gender: 'women',
+    desc: 'Cropped LM windbreaker in royal blue. Zip front, all-over monogram, lightweight.',
+  },
+  {
+    id: 'windbreaker-womens-green',
+    name: 'Women\'s LM Windbreaker · Selva',
+    subtitle: 'Cropped · all-over print',
+    price: 118,
+    images: [
+      'assets/mockup-windbreaker-womens-green-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E', '#87C2DD', '#1A3B8E'],
+    tag: 'New',
+    tagBg: 'var(--cw-selva-accent)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'windbreakers', gender: 'women',
+    desc: 'Cropped LM windbreaker in Selva green. All-over monogram, zip front.',
+  },
+
+  /* ── MEN'S WINDBREAKERS ──────────────────────────────── */
+  {
+    id: 'windbreaker-mens-baby-blue',
+    name: 'Men\'s LM Windbreaker · Baby Blue',
+    subtitle: 'Full zip · all-over print',
+    price: 128,
+    images: [
+      'assets/mockup-windbreaker-mens-baby-blue-front.png',
+      'assets/lookbook-windbreaker-baby-blue-male.png',
+    ],
+    fit: 'contain',
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#1A3B8E', '#1FA85E'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    category: 'windbreakers', gender: 'men',
+    desc: 'Men\'s LM windbreaker in baby blue. Full zip, all-over monogram, lightweight shell.',
+  },
+  {
+    id: 'windbreaker-mens-blue',
+    name: 'Men\'s LM Windbreaker · Blue',
+    subtitle: 'Full zip · all-over print',
+    price: 128,
+    images: [
+      'assets/mockup-windbreaker-mens-blue-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1A3B8E',
+    colorways: ['#1A3B8E', '#87C2DD', '#1FA85E'],
+    tag: 'New',
+    tagBg: 'var(--ink-900)',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    category: 'windbreakers', gender: 'men',
+    desc: 'Men\'s LM windbreaker in royal blue. Full zip, all-over monogram.',
+  },
+  {
+    id: 'windbreaker-mens-green',
+    name: 'Men\'s LM Windbreaker · Selva',
+    subtitle: 'Full zip · all-over print',
+    price: 128,
+    images: [
+      'assets/mockup-windbreaker-mens-green-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E', '#1A3B8E', '#87C2DD'],
+    tag: 'New',
+    tagBg: 'var(--cw-selva-accent)',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    category: 'windbreakers', gender: 'men',
+    desc: 'Men\'s LM windbreaker in Selva green. Full zip, all-over monogram.',
+  },
+
+  /* ── BOMBERS ─────────────────────────────────────────── */
+  {
+    id: 'bomber-mens-baby-blue',
+    name: 'LM Bomber · Baby Blue',
+    subtitle: 'Unisex · all-over print',
+    price: 148,
+    images: [
+      'assets/mockup-bomber-mens-baby-blue-front.png',
+      'assets/mockup-bomber-mens-baby-blue-back.png',
+    ],
+    fit: 'contain',
+    swatch: '#87C2DD',
+    colorways: ['#87C2DD', '#1FA85E', '#181818'],
+    tag: 'New',
+    tagBg: 'var(--magenta-500)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    category: 'bombers', gender: 'unisex',
+    desc: 'Unisex LM bomber jacket in baby blue. All-over monogram print. Ribbed cuffs and collar.',
+  },
+  {
+    id: 'bomber-mens-green',
+    name: 'LM Bomber · Selva',
+    subtitle: 'Unisex · all-over print',
+    price: 148,
+    images: [
+      'assets/mockup-bomber-mens-green-front.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E', '#87C2DD', '#181818'],
+    tag: 'New',
+    tagBg: 'var(--cw-selva-accent)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    category: 'bombers', gender: 'unisex',
+    desc: 'Unisex LM bomber in Selva green. All-over monogram print. Ribbed cuffs and collar.',
+  },
+  {
+    id: 'bomber-green-monogram',
+    name: 'LM Bomber · Verde',
+    subtitle: 'Green · monogram embroidery',
+    price: 165,
+    images: [
+      'assets/product-bomber-green-monogram.png',
+    ],
+    fit: 'contain',
+    swatch: '#1FA85E',
+    colorways: ['#1FA85E'],
+    tag: 'Limited',
+    tagBg: 'var(--cw-selva-base)',
+    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    category: 'bombers', gender: 'unisex',
+    desc: 'Forest-green bomber with embroidered LM monogram chest patch. The premium layer.',
+  },
+
+  /* ── TOPS ────────────────────────────────────────────── */
   {
     id: 'bandidas-crop-tee',
     name: 'Bandidas Crop Tee',
@@ -1308,45 +1721,17 @@ const PRODUCTS = [
     price: 58,
     images: [
       'assets/lookbook-bandidas-crop-tee-plaid.png',
+      'assets/mockup-crop-tee-bandidas-front.png',
+      'assets/mockup-crop-tee-bandidas-back.png',
     ],
+    fit: 'contain',
     swatch: '#181818',
     colorways: ['#181818', '#BC1F2D'],
     tag: 'New',
     tagBg: 'var(--cw-bandidas-accent)',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    category: 'tops', gender: 'women',
     desc: 'Cropped black tee with Bandidas sugar skull graphic. Red ornate print. Statement piece.',
-  },
-  {
-    id: 'bikini-black-bandidas',
-    name: 'LM Bikini · Bandidas',
-    subtitle: 'Triangle · black monogram',
-    price: 95,
-    images: [
-      'assets/lookbook-bikini-black-lm-rio-stairs.jpg',
-    ],
-    swatch: '#181818',
-    colorways: ['#181818', '#87C2DD', '#E8B5BB'],
-    tag: 'New',
-    tagBg: 'var(--ink-900)',
-    sizes: ['XS', 'S', 'M', 'L'],
-    desc: 'Black triangle bikini with embroidered LM monogram. Shot on the stairs in Rio.',
-  },
-  {
-    id: 'sports-bra-red',
-    name: 'Latina Magic Sports Bra',
-    subtitle: 'Standalone · red ornate',
-    price: 65,
-    images: [
-      'assets/lookbook-sports-bra-red-wall.png',
-      'assets/product-sports-bra-red-front.png',
-      'assets/product-sports-bra-red-side.png',
-    ],
-    swatch: '#BC1F2D',
-    colorways: ['#BC1F2D', '#181818'],
-    tag: 'Bestseller',
-    tagBg: 'var(--cw-bandera-accent)',
-    sizes: ['XS', 'S', 'M', 'L', 'XL'],
-    desc: 'Signature red-ornate top. Built for cardio, club, or both.',
   },
 ];
 
@@ -1359,13 +1744,21 @@ function ProductGrid({ onQuickView, onCardClick, title = 'The drop', filterFn, f
   };
   const allFilters = filters || ['All', 'Tracksuits', 'Activewear', 'Bikinis', 'Tops'];
   const [active, setActive] = useState('All');
+  const categoryMap = {
+    Tracksuits:   p => p.category === 'tracksuits',
+    Activewear:   p => p.category === 'activewear',
+    Bikinis:      p => p.category === 'bikinis',
+    Leggings:     p => p.category === 'leggings',
+    Joggers:      p => p.category === 'joggers',
+    Windbreakers: p => p.category === 'windbreakers',
+    Bombers:      p => p.category === 'bombers',
+    Tops:         p => p.category === 'tops',
+    Women:        p => p.gender === 'women',
+    Men:          p => p.gender === 'men',
+  };
   const list = (filterFn ? PRODUCTS.filter(filterFn) : PRODUCTS).filter(p => {
     if (active === 'All') return true;
-    if (active === 'Tracksuits') return p.id.includes('tracksuit');
-    if (active === 'Activewear') return p.id.includes('activewear') || p.id.includes('sports-bra');
-    if (active === 'Bikinis') return p.id.includes('bikini');
-    if (active === 'Tops') return p.id.includes('sports-bra');
-    return true;
+    return categoryMap[active] ? categoryMap[active](p) : true;
   });
   return (
     <section style={{ padding: '32px 32px 96px', maxWidth: 1400, margin: '0 auto' }}>
@@ -1963,21 +2356,27 @@ function QuickView({ product, onClose, onAdd }) {
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginTop: 28 }}>
-            <button onClick={() => { onAdd({ ...product, size }); onClose(); }} disabled={!size} style={{
-              flex: 1,
-              padding: '16px 24px',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 800,
-              fontSize: 13,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              background: size ? 'var(--ink-900)' : 'var(--ink-300)',
-              color: '#fff',
-              border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-300)'),
-              boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none',
-              cursor: size ? 'pointer' : 'not-allowed',
-            }}>
-              {size ? str.addToBag : str.pickSize}
+            <button
+              onClick={() => {
+                if (!size) return;
+                shopifyCheckout(product, size, () => { onAdd({ ...product, size }); onClose(); });
+              }}
+              disabled={!size}
+              style={{
+                flex: 1,
+                padding: '16px 24px',
+                fontFamily: 'var(--font-body)',
+                fontWeight: 800,
+                fontSize: 13,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                background: size ? 'var(--ink-900)' : 'var(--ink-300)',
+                color: '#fff',
+                border: '2px solid ' + (size ? 'var(--ink-900)' : 'var(--ink-300)'),
+                boxShadow: size ? '4px 4px 0 0 var(--magenta-500)' : 'none',
+                cursor: size ? 'pointer' : 'not-allowed',
+              }}>
+              {size ? (SHOP_CONFIG.SHOP_DOMAIN ? str.buyNow || 'Buy Now →' : str.addToBag) : str.pickSize}
             </button>
           </div>
 
@@ -2336,16 +2735,17 @@ function Footer({ onNavigate }) {
 function StorePage({ onQuickView, onCardClick, initialCategory }) {
   const { str } = useContext(LangContext);
 
-  const TABS = ['ALL', 'BIKINIS', 'TRACKSUITS', 'ATHLETIC', 'TOPS'];
+  const TABS = ['ALL', 'BIKINIS', 'TRACKSUITS', 'ATHLETIC', 'OUTERWEAR', 'TOPS'];
   const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const SORT_OPTIONS = ['Featured', 'Price: Low to High', 'Price: High to Low', 'Newest'];
 
   const categoryToTab = (cat) => {
     if (!cat) return 'ALL';
     const c = cat.toUpperCase();
-    if (c.includes('BIKINI')) return 'BIKINIS';
-    if (c.includes('TRACKSUIT') || c.includes('JOGGER') || c.includes('BOMBER')) return 'TRACKSUITS';
-    if (c.includes('ACTIVE') || c.includes('SPORT') || c.includes('LEGGING')) return 'ATHLETIC';
+    if (c.includes('BIKINI') || c.includes('SWIM')) return 'BIKINIS';
+    if (c.includes('TRACKSUIT')) return 'TRACKSUITS';
+    if (c.includes('WIND') || c.includes('BOMBER') || c.includes('JACKET')) return 'OUTERWEAR';
+    if (c.includes('ACTIVE') || c.includes('SPORT') || c.includes('LEGGING') || c.includes('JOGGER')) return 'ATHLETIC';
     if (c.includes('TOP') || c.includes('TEE') || c.includes('BRA')) return 'TOPS';
     return 'ALL';
   };
@@ -2357,17 +2757,46 @@ function StorePage({ onQuickView, onCardClick, initialCategory }) {
   const [priceMax, setPriceMax] = useState(300);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  const CATEGORY_FILTERS = ['Tracksuits', 'Bikinis', 'Activewear', 'Sports Bras', 'Bombers', 'Tops', 'New Arrivals', 'Sale'];
+  const CATEGORY_FILTERS = [
+    'Tracksuits', 'Bikinis', 'Activewear', 'Sports Bras',
+    'Leggings', 'Joggers', 'Windbreakers', 'Bombers', 'Tops',
+  ];
+
+  const CAT_MAP = {
+    Tracksuits:   p => p.category === 'tracksuits',
+    Bikinis:      p => p.category === 'bikinis',
+    Activewear:   p => p.category === 'activewear',
+    'Sports Bras':p => p.id.includes('sports-bra'),
+    Leggings:     p => p.category === 'leggings',
+    Joggers:      p => p.category === 'joggers',
+    Windbreakers: p => p.category === 'windbreakers',
+    Bombers:      p => p.category === 'bombers',
+    Tops:         p => p.category === 'tops',
+  };
 
   const toggleSize = (s) => setSelectedSizes(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
   const toggleCategory = (c) => setSelectedCategories(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
 
   const filtered = useMemo(() => {
     let list = [...PRODUCTS];
-    if (activeTab === 'BIKINIS') list = list.filter(p => p.id.includes('bikini'));
-    else if (activeTab === 'TRACKSUITS') list = list.filter(p => p.id.includes('tracksuit'));
-    else if (activeTab === 'ATHLETIC') list = list.filter(p => p.id.includes('activewear') || p.id.includes('sports-bra'));
-    else if (activeTab === 'TOPS') list = list.filter(p => p.id.includes('sports-bra') || p.id.includes('crop-tee'));
+
+    // Tab filter
+    const tabMap = {
+      BIKINIS:    p => p.category === 'bikinis',
+      TRACKSUITS: p => p.category === 'tracksuits',
+      ATHLETIC:   p => ['activewear','leggings','joggers'].includes(p.category) || p.id.includes('sports-bra'),
+      OUTERWEAR:  p => ['windbreakers','bombers'].includes(p.category),
+      TOPS:       p => p.category === 'tops',
+    };
+    if (tabMap[activeTab]) list = list.filter(tabMap[activeTab]);
+
+    // Sidebar category checkboxes
+    if (selectedCategories.length > 0) {
+      list = list.filter(p => selectedCategories.some(c => CAT_MAP[c] && CAT_MAP[c](p)));
+    }
+
+    // Gender
+    if (genderFilter !== 'All') list = list.filter(p => p.gender === genderFilter.toLowerCase() || p.gender === 'unisex');
 
     if (selectedSizes.length > 0) list = list.filter(p => p.sizes.some(s => selectedSizes.includes(s)));
     list = list.filter(p => p.price <= priceMax);
@@ -2377,7 +2806,7 @@ function StorePage({ onQuickView, onCardClick, initialCategory }) {
     else if (sort === 'Newest') list = list.slice().reverse();
 
     return list;
-  }, [activeTab, selectedSizes, priceMax, sort]);
+  }, [activeTab, selectedCategories, genderFilter, selectedSizes, priceMax, sort]);
 
   return (
     <div style={{ maxWidth: 1400, margin: '0 auto', padding: '40px 32px 96px', display: 'grid', gridTemplateColumns: '220px 1fr', gap: 40, alignItems: 'start' }}>
@@ -2542,7 +2971,7 @@ function StorePage({ onQuickView, onCardClick, initialCategory }) {
 /* ============================================================
    PRODUCT PAGE
    ============================================================ */
-function ProductPage({ product, onBack, onQuickView }) {
+function ProductPage({ product, onBack, onQuickView, onAdd }) {
   const { str } = useContext(LangContext);
   const [imgIdx, setImgIdx] = useState(0);
   const [size, setSize] = useState(null);
@@ -2719,9 +3148,15 @@ function ProductPage({ product, onBack, onQuickView }) {
             </div>
           </div>
 
-          {/* Add to bag */}
+          {/* Add to bag / Shopify checkout */}
           <button
             disabled={!size}
+            onClick={() => {
+              if (!size) return;
+              shopifyCheckout(product, size, () => {
+                if (typeof onAdd === 'function') onAdd(product, size);
+              });
+            }}
             style={{
               width: '100%',
               marginTop: 24,
@@ -2739,8 +3174,15 @@ function ProductPage({ product, onBack, onQuickView }) {
               transition: 'all 220ms var(--ease-out)',
             }}
           >
-            {size ? str.addToBag : str.pickSize}
+            {size
+              ? (SHOP_CONFIG.SHOP_DOMAIN ? str.buyNow || 'Buy Now' : str.addToBag)
+              : str.pickSize}
           </button>
+          {SHOP_CONFIG.SHOP_DOMAIN && (
+            <p style={{ marginTop: 8, fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--fg-3)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Secure checkout via Shopify
+            </p>
+          )}
 
           {/* Trust signals */}
           <div style={{ marginTop: 18, display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--fg-3)' }}>
@@ -3069,6 +3511,7 @@ function AppV2() {
               product={productDetail}
               onBack={() => navigate('store')}
               onQuickView={setQuickView}
+              onAdd={addToCart}
             />
           )}
 
