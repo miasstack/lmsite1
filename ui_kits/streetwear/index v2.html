@@ -1767,6 +1767,36 @@ const PRODUCTS = [
   },
 ];
 
+/* ============================================================
+   COMPLETE THE SET — maps each product to its matching counterpart
+   ============================================================ */
+const COMPLETE_THE_SET = {
+  // Sports bras ↔ matching leggings
+  'sports-bra-red':   'leggings-red',
+  'sports-bra-pink':  'leggings-white',
+  'leggings-red':     'sports-bra-red',
+  'leggings-bw':      'sports-bra-red',
+  'leggings-white':   'sports-bra-pink',
+  // Women's windbreakers ↔ joggers (same colorway)
+  'windbreaker-womens-baby-blue': 'jogger-womens-baby-blue',
+  'windbreaker-womens-blue':      'jogger-womens-blue',
+  'windbreaker-womens-green':     'jogger-womens-green',
+  'jogger-womens-baby-blue': 'windbreaker-womens-baby-blue',
+  'jogger-womens-blue':      'windbreaker-womens-blue',
+  'jogger-womens-green':     'windbreaker-womens-green',
+  // Men's windbreakers → men's jogger (green is only men's jogger)
+  'windbreaker-mens-baby-blue': 'jogger-mens-green',
+  'windbreaker-mens-blue':      'jogger-mens-green',
+  'windbreaker-mens-green':     'jogger-mens-green',
+  'jogger-mens-green':          'windbreaker-mens-green',
+  // Bombers → joggers
+  'bomber-mens-baby-blue':   'jogger-womens-baby-blue',
+  'bomber-mens-green':       'jogger-mens-green',
+  'bomber-green-monogram':   'jogger-mens-green',
+  // Crop top → leggings
+  'bandidas-crop-tee': 'leggings-bw',
+};
+
 function ProductGrid({ onQuickView, onCardClick, title = 'The drop', filterFn, filters }) {
   const { str } = useContext(LangContext);
   const filterLabels = {
@@ -2560,6 +2590,117 @@ function QuickView({ product, onClose, onAdd }) {
             <span>{str.freeShippingMin}</span>
             <span>{str.returnsLabel}</span>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   COMPLETE THE SET
+   ============================================================ */
+function CompleteTheSet({ product, mainSize, onAdd }) {
+  const { lang, navigate } = useContext(LangContext);
+  const matchId = COMPLETE_THE_SET[product.id];
+  const match = matchId ? PRODUCTS.find(p => p.id === matchId) : null;
+  const [setSize, setSetSize] = useState(null);
+
+  // Pre-fill same size as main product whenever it changes
+  React.useEffect(() => {
+    if (mainSize && match && match.sizes.includes(mainSize)) {
+      setSetSize(mainSize);
+    } else {
+      setSetSize(null);
+    }
+  }, [mainSize, matchId]);
+
+  if (!match) return null;
+
+  const isActivewear = ['activewear', 'leggings'].includes(product.category) || product.id.startsWith('sports-bra');
+  const heading = lang === 'en'
+    ? (isActivewear ? 'Complete the Set' : 'Complete the Look')
+    : 'Completa el look';
+  const addLabel = setSize
+    ? (lang === 'en' ? 'Add to Bag →' : 'Agregar →')
+    : (lang === 'en' ? 'Select a size first' : 'Elige una talla');
+
+  return (
+    <div style={{ marginTop: 32, padding: '18px 20px', border: '1.5px solid var(--magenta-400)', background: 'var(--paper)', position: 'relative' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--magenta-500)" stroke="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <span style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--magenta-500)' }}>{heading}</span>
+      </div>
+
+      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+        {/* Thumbnail — click to go to product page */}
+        <div
+          onClick={() => navigate('product', { product: match })}
+          style={{
+            width: 84,
+            height: 100,
+            background: match.swatch,
+            backgroundImage: `url('../../${match.images[0]}')`,
+            backgroundSize: match.fit === 'contain' ? 'contain' : 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            flexShrink: 0,
+            border: '1px solid var(--line)',
+            cursor: 'pointer',
+          }}
+        />
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            onClick={() => navigate('product', { product: match })}
+            style={{ fontFamily: 'var(--font-body)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase', letterSpacing: '-0.005em', lineHeight: 1.2, color: 'var(--ink-900)', cursor: 'pointer' }}
+          >{match.name}</div>
+          <div style={{ fontFamily: 'var(--font-impact)', fontSize: 20, color: 'var(--ink-900)', marginTop: 4 }}>${match.price}</div>
+
+          {/* Size selector */}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 10 }}>
+            {match.sizes.map(s => (
+              <button
+                key={s}
+                onClick={() => setSetSize(s)}
+                style={{
+                  minWidth: 38,
+                  padding: '7px 9px',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: 700,
+                  fontSize: 11,
+                  letterSpacing: '0.04em',
+                  background: setSize === s ? 'var(--ink-900)' : 'transparent',
+                  color: setSize === s ? '#fff' : 'var(--ink-900)',
+                  border: '1.5px solid ' + (setSize === s ? 'var(--ink-900)' : 'var(--ink-400)'),
+                  cursor: 'pointer',
+                  transition: 'all 150ms',
+                }}
+              >{s}</button>
+            ))}
+          </div>
+
+          {/* Add button */}
+          <button
+            disabled={!setSize}
+            onClick={() => { if (!setSize || typeof onAdd !== 'function') return; onAdd({ ...match, size: setSize }); }}
+            style={{
+              marginTop: 10,
+              width: '100%',
+              padding: '11px 16px',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 800,
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              background: setSize ? 'var(--magenta-500)' : 'var(--ink-200)',
+              color: '#fff',
+              border: '2px solid ' + (setSize ? 'var(--magenta-500)' : 'var(--ink-200)'),
+              boxShadow: setSize ? '3px 3px 0 0 var(--ink-900)' : 'none',
+              cursor: setSize ? 'pointer' : 'not-allowed',
+              transition: 'all 180ms',
+            }}
+          >{addLabel}</button>
         </div>
       </div>
     </div>
@@ -3563,6 +3704,9 @@ function ProductPage({ product, onBack, onQuickView, onAdd }) {
               'Free standard shipping on orders over $150. Express and overnight available at checkout. Returns accepted within 14 days of delivery for unworn items in original condition.'
             )}
           </div>
+
+          {/* Complete the Set / Complete the Look */}
+          <CompleteTheSet product={product} mainSize={size} onAdd={onAdd} />
         </div>
       </div>
       {lightbox && (
